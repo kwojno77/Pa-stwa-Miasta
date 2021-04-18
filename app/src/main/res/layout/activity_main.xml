@@ -10,7 +10,7 @@
         android:id="@+id/gameTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Państwa-Miasta"
+        android:text="@string/app_name"
         android:textAlignment="center"
         android:textSize="30sp"
         android:textStyle="bold"
