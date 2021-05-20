@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import com.example.pastwa_miasta.waiting_room.RoomActivity
+import com.example.pastwa_miasta.ServerConnectionActivity
 
 class MainMenuActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,7 +21,7 @@ class MainMenuActivity : AppCompatActivity() {
 
     // Button takes you to X activity
     fun joinGame(view: View) {
-        val i = Intent(this, RoomActivity::class.java)
+        val i = Intent(this, ServerConnectionActivity::class.java)
         startActivity(i)
     }
 }
