@@ -6,4 +6,26 @@
     <string name="stop">STOP</string>
     <string name="rozpocznij">Rozpocznij</string>
     <string name="zatwierd">Zatwierdź</string>
+    <string name="mainMenuButton1Label">Załóż grę</string>
+    <string name="mainMenuButton2Label">Dołącz do gry</string>
+    <string-array name="roundsNum">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+    <string-array name="gamemode">
+        <item>Klasyczny</item>
+    </string-array>
+    <string-array name="categoryNum">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
 </resources>

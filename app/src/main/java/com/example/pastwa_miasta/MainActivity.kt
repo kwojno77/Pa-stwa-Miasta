@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import com.example.pastwa_miasta.databinding.ActivityMainBinding
-import com.example.pastwa_miasta.waiting_room.RoomActivity
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -17,18 +16,21 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        //Greeting toast
+        // Greeting toast
         Toast.makeText(this, "Witamy w ${binding.gameTitle.text}", Toast.LENGTH_SHORT).show()
     }
 
-    //button to confirm nickname and run next activity
+    // Button to confirm nickname and run main menu activity
     fun confirm(view: View) {
-        if (binding.inputUsername.text.length >= 3)
-            Toast.makeText(this, "Super", Toast.LENGTH_SHORT).show()
+        if (binding.inputUsername.text.length >= 3) {
+            val i = Intent(this, MainMenuActivity::class.java)
+            startActivity(i)
+        }
     }
 
+    // TEMPORARY
     fun check(view: View) {
-        val i = Intent(this, RoomActivity::class.java)
+        val i = Intent(this, MainMenuActivity::class.java)
         startActivity(i)
     }
 }
