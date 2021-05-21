@@ -6,9 +6,11 @@ import android.os.Parcelable
 class Player(var name: String) : Parcelable {
     constructor(parcel: Parcel) : this(parcel.readString().toString()) {
     }
+    var points: Int = 0
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
+        parcel.writeInt(points)
     }
 
     override fun describeContents(): Int {

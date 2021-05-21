@@ -1,11 +1,14 @@
 package com.example.pastwa_miasta.main_game
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.R
+import com.example.pastwa_miasta.results.ResultsActivity
 
 class GameActivity : AppCompatActivity() {
 
@@ -43,5 +46,10 @@ class GameActivity : AppCompatActivity() {
             answersList = restoredAllPictures
             (recyclerView.adapter as InGameAdapter).answers = restoredAllPictures
         }
+    }
+
+    fun onClick(view: View) {
+        val i = Intent(this, ResultsActivity::class.java)
+        startActivity(i)
     }
 }

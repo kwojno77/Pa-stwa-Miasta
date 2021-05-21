@@ -36,6 +36,7 @@
             android:autoSizeTextType="uniform"
             android:background="@drawable/rounded_button"
             android:text="@string/stop"
+            android:onClick="onClick"
             android:textAllCaps="false" />
     </LinearLayout>
 
