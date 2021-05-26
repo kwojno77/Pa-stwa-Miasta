@@ -60,6 +60,7 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
             playersList = restoredAllPictures
             (recyclerView.adapter as RoomAdapter).players = restoredAllPictures
         }
+        refresh()
     }
 
     fun startGame(view: View) {
