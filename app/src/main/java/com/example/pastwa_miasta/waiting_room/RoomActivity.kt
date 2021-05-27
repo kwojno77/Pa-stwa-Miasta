@@ -3,6 +3,7 @@ package com.example.pastwa_miasta.waiting_room
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -36,6 +37,10 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
         gameId = "1"
         gameRef = db.reference.child("Games").child(gameId!!)
         playersList = ArrayList()
+
+        findViewById<Button>(R.id.button).setOnClickListener {
+            startGame()
+        }
 
         setViews()
         listenForJoiningPlayers()

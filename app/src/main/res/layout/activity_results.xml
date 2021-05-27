@@ -11,7 +11,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/letterView"
             android:layout_width="0px"
             android:layout_height="64dp"
             android:layout_weight="1"

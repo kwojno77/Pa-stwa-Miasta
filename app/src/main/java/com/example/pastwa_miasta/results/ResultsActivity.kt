@@ -27,7 +27,7 @@ class ResultsActivity : AppCompatActivity() {
         val customAdapter = ResultsAdapter(playersList)
         recyclerView.adapter = customAdapter
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-        playerCounterView = findViewById(R.id.textView)
+        playerCounterView = findViewById(R.id.letterView)
         playerCounterView.text = "Podsumowanie"
     }
 
