@@ -11,8 +11,10 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.R
+import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.results.ResultsActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -41,7 +43,8 @@ class GameActivity : AppCompatActivity() {
         setViews()
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
 
-        myNick = intent.getStringExtra("myNick")
+        checkUser()
+
         gameId = intent.getStringExtra("gameId").toString()
         gameRef = db.reference.child("Games").child(gameId!!)
 
@@ -58,6 +61,17 @@ class GameActivity : AppCompatActivity() {
         checkRounds()
         findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { endRound() }
         timer()
+    }
+
+    // Jeszcze nie wiem czy to potrzebne ale gdzieś może będzie wykorzystane
+    private fun checkUser() {
+        var currUser = FirebaseAuth.getInstance().currentUser
+        if (currUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        } else {
+            myNick = currUser.displayName
+        }
     }
 
     private fun checkRounds() {
@@ -111,7 +125,6 @@ class GameActivity : AppCompatActivity() {
                         }
                         recyclerView.adapter?.notifyDataSetChanged()
                     }
-
                     override fun onCancelled(error: DatabaseError) {}
                 })
     }
@@ -140,9 +153,10 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
-    fun showGameResults() {
+    private fun showGameResults() {
         val i = Intent(this, ResultsActivity::class.java)
         startActivity(i)
+        finish()
     }
 
     fun endRound() {

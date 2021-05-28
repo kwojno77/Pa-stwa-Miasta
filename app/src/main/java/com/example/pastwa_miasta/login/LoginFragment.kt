@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import com.example.pastwa_miasta.MainMenuActivity
 import com.example.pastwa_miasta.R
 import com.google.firebase.auth.FirebaseAuth
 
@@ -26,7 +27,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_login, container, false)
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance()
         val loginView = view.findViewById<EditText>(R.id.loginView)
         passwordView = view.findViewById(R.id.passwordView)
         val loginButton = view.findViewById<Button>(R.id.loginButton)
@@ -71,11 +72,20 @@ class LoginFragment : Fragment() {
             }}
 
     private fun loadMenu() {
-        TODO("Not yet implemented")
+        val i = Intent(activity, MainMenuActivity::class.java)
+        startActivity(i)
+        activity!!.finish()
     }
 
     private fun startRegistration() {
         val i = Intent(context, RegisterActivity::class.java)
         startActivity(i)
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        if(mAuth.currentUser != null) {
+            loadMenu()
+        }
     }
 }
