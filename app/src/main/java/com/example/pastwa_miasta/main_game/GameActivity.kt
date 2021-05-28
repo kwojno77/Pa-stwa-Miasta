@@ -2,7 +2,9 @@ package com.example.pastwa_miasta.main_game
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -10,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.R
 import com.example.pastwa_miasta.results.ResultsActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -26,6 +29,7 @@ class GameActivity : AppCompatActivity() {
     private var maxRounds: Int = 0
     private var myNick: String? = null
     private var gameId: String? = null
+    private var thread : TimerThread = TimerThread(this)
 
     private lateinit var db: FirebaseDatabase
     private lateinit var gameRef: DatabaseReference
@@ -52,6 +56,8 @@ class GameActivity : AppCompatActivity() {
             getGameCategories()
         }
         checkRounds()
+        findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { endRound() }
+        timer()
     }
 
     private fun checkRounds() {
@@ -79,7 +85,21 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun timer() {
-        //TODO odmierzanie czasu i zmiana labela zegara
+        thread.start()
+    }
+
+    fun updateTime(time : Int) {
+        var minutes = 0
+        var seconds = time
+        while (seconds - 60 >= 0) {
+            minutes++
+            seconds -= 60
+        }
+        var timeString = "$minutes:$seconds"
+        if (seconds < 10) {
+            timeString = "$minutes:0$seconds"
+        }
+        findViewById<TextView>(R.id.timerView).text = timeString
     }
 
     private fun getGameCategories() {
@@ -123,5 +143,12 @@ class GameActivity : AppCompatActivity() {
     fun showGameResults() {
         val i = Intent(this, ResultsActivity::class.java)
         startActivity(i)
+    }
+
+    fun endRound() {
+        thread.running = false
+        Log.d("PM2021", "Round Ends")
+        showGameResults()
+        //TODO po naciśnięciu  przycisku lub jak czas się skończy
     }
 }
