@@ -4,6 +4,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.example.pastwa_miasta.waiting_room.RoomActivity
+import com.example.pastwa_miasta.ServerConnectionActivity
+import com.example.pastwa_miasta.create_game.CreateGameActivity
 
 class MainMenuActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

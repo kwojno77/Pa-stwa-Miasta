@@ -27,6 +27,15 @@
         <item>3</item>
         <item>4</item>
         <item>5</item>
+        <item>6</item>
+    </string-array>
+    <string-array name="categories">
+        <item>Miasta</item>
+        <item>Państwa</item>
+        <item>Pierwiastki</item>
+        <item>Rośliny</item>
+        <item>Stany USA</item>
+        <item>Zwierzęta</item>
     </string-array>
     <string name="title_activity_scrolling">ScrollingActivity</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>

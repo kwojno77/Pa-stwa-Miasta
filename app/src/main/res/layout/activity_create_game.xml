@@ -4,27 +4,93 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CreateGameActivity">
+    tools:context=".create_game.CreateGameActivity">
 
-    <Spinner
-        android:id="@+id/categoryNumSpinner"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="120dp"
-        app:layout_constraintBottom_toTopOf="@+id/createGameConfirmButton"
+        android:layout_height="400dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createGameTextView3" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <Spinner
-        android:id="@+id/roundNumSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="120dp"
-        app:layout_constraintBottom_toTopOf="@+id/createGameTextView3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createGameTextView2" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/createGameTextView1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="120dp"
+                android:textAlignment="center"
+                android:layout_marginBottom="20dp"
+                android:text="Tryb gry"
+                android:textSize="20sp" />
+
+            <Spinner
+                android:id="@+id/gameModeSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginHorizontal="120dp" />
+
+            <TextView
+                android:id="@+id/createGameTextView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="120dp"
+                android:textAlignment="center"
+                android:layout_marginBottom="20dp"
+                android:text="Liczba rund"
+                android:textSize="20sp" />
+
+            <Spinner
+                android:id="@+id/roundNumSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginHorizontal="120dp" />
+
+            <TextView
+                android:id="@+id/createGameTextView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="120dp"
+                android:textAlignment="center"
+                android:layout_marginBottom="20dp"
+                android:text="Liczba kategorii"
+                android:textSize="20sp" />
+
+            <Spinner
+                android:id="@+id/categoryNumSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_marginHorizontal="120dp" />
+
+            <TextView
+                android:id="@+id/createGameTextView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="120dp"
+                android:textAlignment="center"
+                android:layout_marginBottom="20dp"
+                android:text="Kategorie"
+                android:textSize="20sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/spinnerRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="120dp"
+                android:textAlignment="center"
+                android:layout_marginBottom="20dp" />
+
+
+        </LinearLayout>
+    </ScrollView>
 
     <TextView
         android:id="@+id/createGameHeader"
@@ -38,52 +104,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.1" />
-
-    <TextView
-        android:id="@+id/createGameTextView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tryb gry"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/createGameConfirmButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createGameHeader"
-        app:layout_constraintVertical_bias="0.25" />
-
-    <Spinner
-        android:id="@+id/gameModeSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="120dp"
-        app:layout_constraintBottom_toTopOf="@+id/createGameTextView2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createGameTextView1" />
-
-    <TextView
-        android:id="@+id/createGameTextView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Liczba rund"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/createGameConfirmButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createGameHeader" />
-
-    <TextView
-        android:id="@+id/createGameTextView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Liczba kategorii"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/createGameConfirmButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createGameHeader"
-        app:layout_constraintVertical_bias="0.75" />
+        app:layout_constraintVertical_bias="0.060000002" />
 
     <Button
         android:id="@+id/createGameConfirmButton"
