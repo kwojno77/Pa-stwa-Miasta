@@ -51,11 +51,22 @@
         android:enabled="false"
         android:onClick="logIn"
         android:text="@string/zaloguj"
-        app:layout_constraintBottom_toBottomOf="@id/registerButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordView"
-        app:layout_constraintVertical_bias="0.2" />
+        app:layout_constraintTop_toBottomOf="@+id/passwordView" />
+
+    <Button
+        android:id="@+id/resetPassButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:padding="1sp"
+        android:text="@string/nie_pami_tam_has_a"
+        android:textAllCaps="false"
+        android:textSize="15sp"
+        app:layout_constraintTop_toBottomOf="@+id/loginButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/registerButton"
@@ -67,7 +78,18 @@
         android:textAllCaps="false"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginButton"
+        app:layout_constraintTop_toBottomOf="@+id/resetPassButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/loginProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:translationZ="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,11 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.Fragment
 import com.example.pastwa_miasta.R
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -29,6 +32,7 @@ class RegisterFragment : Fragment() {
     private lateinit var loginView: EditText
     private lateinit var passwordView: EditText
     private lateinit var repeatedPasswordView: EditText
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +48,8 @@ class RegisterFragment : Fragment() {
         loginView = view.findViewById(R.id.loginView)
         passwordView = view.findViewById(R.id.passwordView)
         repeatedPasswordView = view.findViewById(R.id.passwordRepeatView)
+        progressBar = view.findViewById(R.id.registerProgressBar)
+        progressBar.visibility = View.INVISIBLE
 
         val registerButton = view.findViewById<Button>(R.id.registerButton)
 
@@ -74,10 +80,12 @@ class RegisterFragment : Fragment() {
     }
 
     private fun registerToFirebase(email: String, pass: String, nick: String) {
+        progressBar.visibility = View.VISIBLE
         mAuth!!.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(context as Activity) { task ->
             if (task.isSuccessful) {
                 var currentUser = mAuth!!.currentUser
                 if (currentUser != null) {
+                    sendVerificationMail(currentUser)
                     var profileUpdates = UserProfileChangeRequest.Builder().setDisplayName(nick).build()
                     currentUser.updateProfile(profileUpdates)
                         .addOnCompleteListener { task ->
@@ -87,13 +95,27 @@ class RegisterFragment : Fragment() {
                         }
                     db.reference.child("Users").child(nick).child("Uid").setValue(currentUser.uid)
                     clearForm()
-                    Toast.makeText(context, "Utworzono nowe konto: $nick", Toast.LENGTH_LONG).show()
                 }
             } else {
                 Log.e("Firebase ", "Error: ", task.exception)
+                if(task.exception is FirebaseAuthInvalidCredentialsException) {
+                    loginView.error = "Email jest w złym formacie!"
+                } else {
+                    loginView.error = task.exception?.message
+                }
+            }
+            progressBar.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun sendVerificationMail(currentUser: FirebaseUser) {
+        currentUser.sendEmailVerification().addOnCompleteListener(context as Activity) { task ->
+            if(task.isSuccessful) {
+                Toast.makeText(context, "Utworzono nowe konto: ${currentUser.displayName}\nZweryfikuj maila zanim się zalogujesz", Toast.LENGTH_LONG).show()
             }
         }
     }
+
 
     private fun validation(email: String, pass: String, pass2: String, nick: String): Boolean {
         val passAlert = validatePassword(pass, pass2)
