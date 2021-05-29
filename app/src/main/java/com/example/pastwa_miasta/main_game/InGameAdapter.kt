@@ -15,7 +15,7 @@ class InGameAdapter(
 ) :
     RecyclerView.Adapter<InGameAdapter.ViewHolder>() {
 
-    var iTextChange : ITextChange? = null
+    private var iTextChange : ITextChange? = null
 
     inner class ViewHolder(view: View, iTextChange: ITextChange) : RecyclerView.ViewHolder(view) {
         var categoryLabel: TextView? = null

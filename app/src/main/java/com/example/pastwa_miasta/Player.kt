@@ -3,7 +3,7 @@ package com.example.pastwa_miasta
 import android.os.Parcel
 import android.os.Parcelable
 
-class Player(var name: String) : Parcelable {
+class Player(val name: String) : Parcelable {
     constructor(parcel: Parcel) : this(parcel.readString().toString()) {
     }
     var points: Int = 0
