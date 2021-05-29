@@ -37,8 +37,6 @@
         <item>Stany USA</item>
         <item>Zwierzęta</item>
     </string-array>
-    <string name="title_activity_scrolling">ScrollingActivity</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="powt_rz_has_o">Powtórz hasło</string>
     <string name="e_mail">E-mail</string>
     <string name="zarejestruj_si">Zarejestruj się</string>
@@ -46,4 +44,5 @@
     <string name="has_o">Hasło</string>
     <string name="nick_w_grze">Nick w grze</string>
     <string name="nie_pami_tam_has_a">Nie pamiętam hasła</string>
+    <string name="swipe_instruct">Jeśli uważasz, że odpowiedź jest poprawna przesuń ją w prawo, w przeciwnym wypadku w lewo</string>
 </resources>

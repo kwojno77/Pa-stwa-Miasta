@@ -16,6 +16,7 @@ class InGameAdapter(
     RecyclerView.Adapter<InGameAdapter.ViewHolder>() {
 
     private var iTextChange : ITextChange? = null
+    var isEditable: Boolean = true
 
     inner class ViewHolder(view: View, iTextChange: ITextChange) : RecyclerView.ViewHolder(view) {
         var categoryLabel: TextView? = null
@@ -37,6 +38,9 @@ class InGameAdapter(
         iTextChange?.updatePosition(position)
         viewHolder.categoryLabel?.text = answers[position].category
         viewHolder.userInput.setText(answers[position].answer)
+        if(!isEditable) {
+            viewHolder.userInput.isEnabled = false
+        }
     }
 
     override fun getItemCount() = answers.size

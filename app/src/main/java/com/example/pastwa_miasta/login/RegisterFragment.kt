@@ -83,10 +83,10 @@ class RegisterFragment : Fragment() {
         progressBar.visibility = View.VISIBLE
         mAuth!!.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(context as Activity) { task ->
             if (task.isSuccessful) {
-                var currentUser = mAuth!!.currentUser
+                val currentUser = mAuth!!.currentUser
                 if (currentUser != null) {
                     sendVerificationMail(currentUser)
-                    var profileUpdates = UserProfileChangeRequest.Builder().setDisplayName(nick).build()
+                    val profileUpdates = UserProfileChangeRequest.Builder().setDisplayName(nick).build()
                     currentUser.updateProfile(profileUpdates)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
@@ -115,7 +115,6 @@ class RegisterFragment : Fragment() {
             }
         }
     }
-
 
     private fun validation(email: String, pass: String, pass2: String, nick: String): Boolean {
         val passAlert = validatePassword(pass, pass2)

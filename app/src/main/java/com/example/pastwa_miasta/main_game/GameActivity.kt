@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.R
 import com.example.pastwa_miasta.login.LoginActivity
+import com.example.pastwa_miasta.main_game.answers_voting.VotingActivity
+import com.example.pastwa_miasta.main_game.answers_voting.VotingAdapter
 import com.example.pastwa_miasta.results.ResultsActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
@@ -29,8 +31,8 @@ class GameActivity : AppCompatActivity() {
 
     private var currentRound: Int = 0
     private var maxRounds: Int = 0
-    private var myNick: String? = null
-    private var gameId: String? = null
+    private lateinit var myNick: String
+    private lateinit var gameId: String
     private var thread : TimerThread = TimerThread(this)
 
     private lateinit var db: FirebaseDatabase
@@ -48,9 +50,6 @@ class GameActivity : AppCompatActivity() {
         gameId = intent.getStringExtra("gameId").toString()
         gameRef = db.reference.child("Games").child(gameId!!)
 
-        roundCounterView = findViewById(R.id.roundCounterView)
-        timerView = findViewById(R.id.timerView)
-
         val restoredAllAnswers = savedInstanceState?.getParcelableArrayList<Answer>("answersList")
         if (restoredAllAnswers != null) {
             answersList = restoredAllAnswers
@@ -59,18 +58,23 @@ class GameActivity : AppCompatActivity() {
             getGameCategories()
         }
         checkRounds()
-        findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { endRound() }
+        findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { reportEnding() }
         timer()
+    }
+
+    private fun reportEnding() {
+        (recyclerView.adapter as InGameAdapter).isEditable = false
+        thread.changeTime(15)
     }
 
     // Jeszcze nie wiem czy to potrzebne ale gdzieś może będzie wykorzystane
     private fun checkUser() {
-        var currUser = FirebaseAuth.getInstance().currentUser
+        val currUser = FirebaseAuth.getInstance().currentUser
         if (currUser == null) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         } else {
-            myNick = currUser.displayName
+            myNick = currUser.displayName.toString()
         }
     }
 
@@ -113,7 +117,7 @@ class GameActivity : AppCompatActivity() {
         if (seconds < 10) {
             timeString = "$minutes:0$seconds"
         }
-        findViewById<TextView>(R.id.timerView).text = timeString
+        timerView.text = timeString
     }
 
     private fun getGameCategories() {
@@ -130,6 +134,8 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun setViews() {
+        roundCounterView = findViewById(R.id.roundCounterView)
+        timerView = findViewById(R.id.timerView)
         recyclerView = findViewById(R.id.recyclerViewGame)
         recyclerView.layoutManager = LinearLayoutManager(this)
         val customAdapter = InGameAdapter(answersList)
@@ -155,14 +161,30 @@ class GameActivity : AppCompatActivity() {
 
     private fun showGameResults() {
         val i = Intent(this, ResultsActivity::class.java)
+        i.putExtra("gameId", gameId)
+        startActivity(i)
+        finish()
+    }
+
+    private fun sendAnswersToDatabase() {
+        for(answer in answersList) {
+            gameRef.child("Players").child(myNick)
+                .child(answer.category).child(currentRound.toString()).child(answer.answer).setValue("check")
+        }
+    }
+
+    private fun showVoting() {
+        val i = Intent(this, VotingActivity::class.java)
+        i.putExtra("gameId", gameId)
         startActivity(i)
         finish()
     }
 
     fun endRound() {
+        sendAnswersToDatabase()
         thread.running = false
+        showVoting()
         Log.d("PM2021", "Round Ends")
-        showGameResults()
         //TODO po naciśnięciu  przycisku lub jak czas się skończy
     }
 }

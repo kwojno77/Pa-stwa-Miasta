@@ -75,7 +75,7 @@ class LoginFragment : Fragment() {
         mAuth.signInWithEmailAndPassword(login, pass)
             .addOnCompleteListener(context as Activity) { task ->
                 if (task.isSuccessful) {
-                    var currentUser = mAuth!!.currentUser
+                    val currentUser = mAuth!!.currentUser
                     if (currentUser != null ) {//&& currentUser.isEmailVerified) {
                         Toast.makeText(context, "Witaj ${currentUser.displayName}", Toast.LENGTH_SHORT).show()
                         loadMenu()
@@ -108,22 +108,27 @@ class LoginFragment : Fragment() {
     }
 
     private fun showResetDialog() {
-        var builder = AlertDialog.Builder(context, R.style.AlertDialog_AppCompat_Light)
-        var customLayout = layoutInflater.inflate(R.layout.dialog_password_reset, null)
+        val builder = AlertDialog.Builder(context, R.style.AlertDialog_AppCompat_Light)
+        val customLayout = layoutInflater.inflate(R.layout.dialog_password_reset, null)
         builder.setView(customLayout)
         builder.setTitle("Reset hasła")
 
         builder.setPositiveButton("Wyślij email resetujący") { dialog, id ->
-            var text = customLayout.findViewById<EditText>(R.id.emailEntryDialog)
+            val text = customLayout.findViewById<EditText>(R.id.emailEntryDialog)
             sendResetEmail(text!!.text.toString())
+            Toast.makeText(context, "Wysłano linka na maila ${text.text}", Toast.LENGTH_SHORT).show()
         }
-
         builder.create().show()
-
-
     }
 
     private fun sendResetEmail(text: String) {
-        mAuth.sendPasswordResetEmail(text)
+        mAuth.sendPasswordResetEmail(text).addOnCompleteListener {
+            task ->
+            if(task.isSuccessful) {
+                Toast.makeText(context, "Wysłano linka na maila $text", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Nie udało się wysłać linka :(", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

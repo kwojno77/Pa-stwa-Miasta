@@ -1,13 +1,11 @@
 package com.example.pastwa_miasta.main_game
 
-import android.util.Log
-
 class TimerThread(private val gameActivity: GameActivity) : Thread() {
 
     var running: Boolean = true
+    private var time: Int = 90
 
     override fun run() {
-        var time = 90
         val targetTime : Long = 1000 // milliseconds
         var startTime: Long
         var waitTime: Long
@@ -23,5 +21,9 @@ class TimerThread(private val gameActivity: GameActivity) : Thread() {
             sleep(waitTime)
         }
         gameActivity.endRound()
+    }
+
+    fun changeTime(newTime: Int) {
+        this.time = newTime
     }
 }
