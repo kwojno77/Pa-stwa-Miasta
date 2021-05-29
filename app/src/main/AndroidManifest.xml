@@ -16,15 +16,21 @@
         </activity>
         <activity android:name=".login.RegisterActivity" />
         <activity android:name=".results.ResultsActivity" />
-        <activity android:name=".CreateGameActivity" />
-        <activity android:name=".MainMenuActivity" />
-        <activity android:name=".main_game.GameActivity" />
-        <activity android:name=".waiting_room.RoomActivity" >
+        <activity android:name=".create_game.CreateGameActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".MainMenuActivity" />
+        <activity android:name=".main_game.GameActivity" />
+        <activity android:name=".waiting_room.RoomActivity" >
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
         </activity>
         <activity android:name=".ServerConnectionActivity" />
         <activity android:name=".MainActivity">
