@@ -33,6 +33,7 @@ class GameActivity : AppCompatActivity() {
     private var maxRounds: Int = 0
     private lateinit var myNick: String
     private lateinit var gameId: String
+    private var isHost: Boolean = false
     private var thread : TimerThread = TimerThread(this)
 
     private lateinit var db: FirebaseDatabase
@@ -46,7 +47,7 @@ class GameActivity : AppCompatActivity() {
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
 
         checkUser()
-
+        isHost = intent.getBooleanExtra("isHost", false)
         gameId = intent.getStringExtra("gameId").toString()
         gameRef = db.reference.child("Games").child(gameId!!)
 
@@ -79,7 +80,8 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun checkRounds() {
-        gameRef.child("Rounds").addListenerForSingleValueEvent(object : ValueEventListener {
+        gameRef.child("Rounds")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 currentRound = dataSnapshot.children.count()
                 checkMaxRounds()
@@ -89,7 +91,8 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun checkMaxRounds() {
-        gameRef.child("Settings").child("Rounds_num").addListenerForSingleValueEvent(object : ValueEventListener {
+        gameRef.child("Settings").child("Rounds_num")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 maxRounds = dataSnapshot.value.toString().toInt()
                 setRoundLabel()
@@ -122,15 +125,15 @@ class GameActivity : AppCompatActivity() {
 
     private fun getGameCategories() {
         gameRef.child("Settings").child("Categories")
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        dataSnapshot.children.forEach {
-                            answersList.add(Answer(it.key.toString()))
-                        }
-                        recyclerView.adapter?.notifyDataSetChanged()
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    dataSnapshot.children.forEach {
+                        answersList.add(Answer(it.key.toString()))
                     }
-                    override fun onCancelled(error: DatabaseError) {}
-                })
+                    recyclerView.adapter?.notifyDataSetChanged()
+                }
+                override fun onCancelled(error: DatabaseError) {}
+            })
     }
 
     private fun setViews() {
@@ -180,10 +183,56 @@ class GameActivity : AppCompatActivity() {
         finish()
     }
 
+    private fun verifyInDatabase() {
+        db.reference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                var playerRef = dataSnapshot.child("Games").child(gameId).child("Players").child(myNick)
+                playerRef.children.forEach {
+                    val map: HashMap<String, String> = (it.value as ArrayList<HashMap<String, String>>).last()
+                    for(elem in map) {
+                        var isCorrect = dataSnapshot.child("Keywords").child(it.key!!).child(elem.key).exists()
+                        setAnswerTrueOrFalse(it.key!!, elem.key, isCorrect)
+                    }
+                }
+                autoReport()
+                recyclerView.adapter?.notifyDataSetChanged()
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    private fun setAnswerTrueOrFalse(category: String, answer: String, value: Boolean) {
+        gameRef.child("Players").child(myNick)
+            .child(category).child(currentRound.toString()).child(answer).setValue(value)
+    }
+
+    private fun reportToDatabase(category: String, answer: String) {
+        if(answer.trim().length > 1)
+            gameRef.child("Reported").child(category).child(myNick)
+                .child(answer).child("Votes").setValue("-")
+    }
+
+    private fun autoReport() {
+        gameRef.child("Players").child(myNick).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                dataSnapshot.children.forEach {
+                    val map: HashMap<String, String> = (it.value as ArrayList<HashMap<String, String>>).last()
+                    for(elem in map) {
+                        if(dataSnapshot.child(it.key!!).child(currentRound.toString()).child(elem.key).value == false)
+                            reportToDatabase(it.key!!, elem.key)
+                    }
+                }
+                showVoting()
+                recyclerView.adapter?.notifyDataSetChanged()
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
     fun endRound() {
         sendAnswersToDatabase()
+        verifyInDatabase()
         thread.running = false
-        showVoting()
         Log.d("PM2021", "Round Ends")
         //TODO po naciśnięciu  przycisku lub jak czas się skończy
     }

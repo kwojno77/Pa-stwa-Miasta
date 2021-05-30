@@ -116,7 +116,7 @@ class LoginFragment : Fragment() {
         builder.setPositiveButton("Wyślij email resetujący") { dialog, id ->
             val text = customLayout.findViewById<EditText>(R.id.emailEntryDialog)
             sendResetEmail(text!!.text.toString())
-            Toast.makeText(context, "Wysłano linka na maila ${text.text}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Wysłano link na maila ${text.text}", Toast.LENGTH_SHORT).show()
         }
         builder.create().show()
     }
