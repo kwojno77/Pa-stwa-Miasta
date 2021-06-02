@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.NumberPicker
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +27,7 @@ class CreateGameActivity : AppCompatActivity() {
         //var gameId = "1" // TYMCZASOWE
         //db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
         //gameRef = db.reference.child("Games").child(gameId!!)
+
         prepareAdapter()
         prepareSpinners()
     }
@@ -39,7 +41,7 @@ class CreateGameActivity : AppCompatActivity() {
     }
 
     private fun addCategorySpinner() {
-        val spinner : Spinner = Spinner(this)
+        val spinner = Spinner(this)
         val s = SpinnerModel()
         s.spinner = spinner
         listData.add(s)
@@ -47,10 +49,10 @@ class CreateGameActivity : AppCompatActivity() {
 
     // Prepares Spinners' Adapters
     private fun prepareSpinners() {
-        val gameModeSpinner: Spinner = findViewById(R.id.gameModeSpinner)
+        //val gameModeSpinner: Spinner = findViewById(R.id.gameModeSpinner)
         val roundNumSpinner: Spinner = findViewById(R.id.roundNumSpinner)
         val categoryNumSpinner: Spinner = findViewById(R.id.categoryNumSpinner)
-        createSpinner(gameModeSpinner, R.array.gamemode)
+        //createSpinner(gameModeSpinner, R.array.gamemode)
         createSpinner(roundNumSpinner, R.array.roundsNum)
         createSpinner(categoryNumSpinner, R.array.categoryNum)
         categoryNumSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{

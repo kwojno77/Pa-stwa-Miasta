@@ -1,122 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
     tools:context=".create_game.CreateGameActivity">
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/createGameTextView1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="120dp"
-                android:textAlignment="center"
-                android:layout_marginBottom="20dp"
-                android:text="Tryb gry"
-                android:textSize="20sp" />
-
-            <Spinner
-                android:id="@+id/gameModeSpinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:layout_marginHorizontal="120dp" />
-
-            <TextView
-                android:id="@+id/createGameTextView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="120dp"
-                android:textAlignment="center"
-                android:layout_marginBottom="20dp"
-                android:text="Liczba rund"
-                android:textSize="20sp" />
-
-            <Spinner
-                android:id="@+id/roundNumSpinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:layout_marginHorizontal="120dp" />
-
-            <TextView
-                android:id="@+id/createGameTextView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="120dp"
-                android:textAlignment="center"
-                android:layout_marginBottom="20dp"
-                android:text="Liczba kategorii"
-                android:textSize="20sp" />
-
-            <Spinner
-                android:id="@+id/categoryNumSpinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:layout_marginHorizontal="120dp" />
-
-            <TextView
-                android:id="@+id/createGameTextView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="120dp"
-                android:textAlignment="center"
-                android:layout_marginBottom="20dp"
-                android:text="Kategorie"
-                android:textSize="20sp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/spinnerRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="120dp"
-                android:textAlignment="center"
-                android:layout_marginBottom="20dp" />
-
-
-        </LinearLayout>
-    </ScrollView>
 
     <TextView
         android:id="@+id/createGameHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Podaj dane\nzakładające grę"
+        android:text="@string/stw_rz_gr"
+        android:layout_margin="15sp"
         android:textAlignment="center"
-        android:textSize="34sp"
-        app:layout_constraintBottom_toTopOf="@+id/createGameConfirmButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.060000002" />
+        android:textSize="34sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_margin="10sp"
+            android:id="@+id/createGameTextView2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/liczba_rund"
+            android:textAlignment="center"
+            android:textSize="20sp" />
+
+        <Spinner
+            android:layout_margin="10sp"
+            android:id="@+id/roundNumSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:spinnerMode="dialog" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_margin="10sp"
+            android:id="@+id/createGameTextView3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/liczba_kategorii"
+            android:textAlignment="center"
+            android:textSize="20sp" />
+
+        <Spinner
+            android:id="@+id/categoryNumSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:spinnerMode="dialog" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/createGameTextView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10sp"
+        android:text="@string/kategorie"
+        android:textAlignment="center"
+        android:textSize="20sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/spinnerRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_margin="20sp" />
 
     <Button
         android:id="@+id/createGameConfirmButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="confirm"
         android:paddingHorizontal="100dp"
         android:paddingVertical="15dp"
-        android:text="Zatwierdź"
-        android:onClick="confirm"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.95" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:text="Zatwierdź" />
+
+</LinearLayout>

@@ -18,7 +18,7 @@
         app:layout_constraintVertical_bias="1.0">
 
         <Button
-            android:id="@+id/mainMenuButton1"
+            android:id="@+id/menuCreateButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -29,14 +29,13 @@
             android:textSize="25sp" />
 
         <Button
-            android:id="@+id/mainMenuButton2"
+            android:id="@+id/menuJoinButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:paddingTop="20dp"
             android:paddingBottom="20dp"
             android:text="@string/mainMenuButton2Label"
-            android:onClick="joinGame"
             android:textSize="25sp" />
     </LinearLayout>
 
@@ -44,7 +43,7 @@
         android:id="@+id/MainMenuTitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Menu Główne"
+        android:text="@string/menu_g_wne"
         android:textSize="34sp"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
