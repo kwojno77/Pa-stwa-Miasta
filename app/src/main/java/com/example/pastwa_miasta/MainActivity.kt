@@ -1,10 +1,10 @@
 package com.example.pastwa_miasta
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.pastwa_miasta.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

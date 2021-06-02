@@ -3,8 +3,6 @@ package com.example.pastwa_miasta.main_game
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -13,14 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.R
 import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.main_game.answers_voting.VotingActivity
-import com.example.pastwa_miasta.main_game.answers_voting.VotingAdapter
 import com.example.pastwa_miasta.results.ResultsActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlin.math.max
 
 class GameActivity : AppCompatActivity() {
 

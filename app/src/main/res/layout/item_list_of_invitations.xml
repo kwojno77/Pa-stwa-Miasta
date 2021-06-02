@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foregroundTint="#FFFFFF"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/nickLabel"
+        android:layout_width="0px"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textColor="#000000" />
+
+    <Button
+        android:id="@+id/acceptButton"
+        android:layout_width="0px"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.7"
+        android:layout_margin="10dp"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:text="@string/akceptuj" />
+
+    <Button
+        android:id="@+id/declineButton"
+        android:layout_width="0px"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.6"
+        android:layout_margin="10dp"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:text="@string/odrzu" />
+
+</LinearLayout>

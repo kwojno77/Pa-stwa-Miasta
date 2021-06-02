@@ -31,7 +31,6 @@
         <activity android:name=".main_game.GameActivity" />
         <activity android:name=".waiting_room.RoomActivity">
         </activity>
-        <activity android:name=".ServerConnectionActivity" />
         <activity android:name=".MainActivity"></activity>
     </application>
 

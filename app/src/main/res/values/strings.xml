@@ -45,4 +45,6 @@
     <string name="nick_w_grze">Nick w grze</string>
     <string name="nie_pami_tam_has_a">Nie pamiętam hasła</string>
     <string name="swipe_instruct">Jeśli uważasz, że odpowiedź jest poprawna przesuń ją w prawo, w przeciwnym wypadku w lewo</string>
+    <string name="akceptuj">Akceptuj</string>
+    <string name="odrzu">Odrzuć</string>
 </resources>
