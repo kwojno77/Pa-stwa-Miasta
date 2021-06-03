@@ -26,7 +26,8 @@
         <activity android:name=".results.ResultsActivity" />
         <activity android:name=".create_game.CreateGameActivity" />
         <activity android:name=".MainMenuActivity" />
-        <activity android:name=".main_game.GameActivity" />
+        <activity android:name=".main_game.GameActivity" 
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
         <activity android:name=".invitations.InvitationsActivity" />
         <activity android:name=".waiting_room.RoomActivity" />
     </application>

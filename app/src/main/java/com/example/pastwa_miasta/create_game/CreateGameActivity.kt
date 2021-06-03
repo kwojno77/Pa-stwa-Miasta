@@ -69,10 +69,8 @@ class CreateGameActivity : AppCompatActivity() {
 
     // Prepares Spinners' Adapters
     private fun prepareSpinners() {
-        //val gameModeSpinner: Spinner = findViewById(R.id.gameModeSpinner)
         roundNumSpinner = findViewById(R.id.roundNumSpinner)
         categoryNumSpinner = findViewById(R.id.categoryNumSpinner)
-        //createSpinner(gameModeSpinner, R.array.gamemode)
         createSpinner(roundNumSpinner, R.array.roundsNum)
         createSpinner(categoryNumSpinner, R.array.categoryNum)
         categoryNumSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
