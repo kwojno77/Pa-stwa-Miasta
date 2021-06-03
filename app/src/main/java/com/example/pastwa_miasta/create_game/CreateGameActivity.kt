@@ -104,20 +104,24 @@ class CreateGameActivity : AppCompatActivity() {
         gameId = myRef.child("Games").push().key.toString()
         var gameRef = myRef.child("Games").child(gameId)
         gameRef.child("Game_flag").setValue(false)
-        gameRef.child("Players").child(myNick).setValue(true)
+        gameRef.child("Players").child(myNick).child("Points").setValue(0)
         for(i in 0..roundNumSpinner.selectedItemPosition)
             gameRef.child("Rounds").child((i+1).toString()).setValue(false)
         gameRef.child("Settings").child("Rounds_num").setValue(roundNumSpinner.selectedItemPosition+1)
-        //for(i in 0..categoryNumSpinner.selectedItemPosition) {
-        //    listData[i].spinner?.selectedItem.toString()
-        //}
+        var categories = ArrayList<String>()
+        categories.add("Państwa")
+        categories.add("Miasta")
+        categories.add("Stany USA")
+        for(i in categories) {
+            gameRef.child("Settings").child("Categories").child(i).setValue(true)
+        }
 
         // TODO Trzeba wyciągnąć z tych spinnerów wybrane kategorie
     }
 
     // Button takes you to a room activity
     fun confirm(view: View) {
-        //createGame()
+        createGame()
         val i = Intent(this, RoomActivity::class.java)
         i.putExtra("isHost", true)
         i.putExtra("gameId", gameId)

@@ -7,23 +7,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.view.children
+import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.R
+import java.nio.file.WatchEvent
 
 class InGameAdapter(
         var answers: ArrayList<Answer>,
 ) :
     RecyclerView.Adapter<InGameAdapter.ViewHolder>() {
 
-    private var iTextChange : ITextChange? = null
     var isEditable: Boolean = true
-
-    inner class ViewHolder(view: View, iTextChange: ITextChange) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(view: View, iTextChanged: ITextChange) : RecyclerView.ViewHolder(view) {
         var categoryLabel: TextView? = null
+        var iTextChange : ITextChange? = null
         val userInput: EditText
+
         init {
             categoryLabel = view.findViewById(R.id.categoryLabel)
             userInput = view.findViewById(R.id.answer)
+            iTextChange = iTextChanged
             userInput.addTextChangedListener(iTextChange)
         }
     }
@@ -35,12 +39,9 @@ class InGameAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        iTextChange?.updatePosition(position)
+        viewHolder.iTextChange?.updatePosition(position)
         viewHolder.categoryLabel?.text = answers[position].category
         viewHolder.userInput.setText(answers[position].answer)
-        if(!isEditable) {
-            viewHolder.userInput.isEnabled = false
-        }
     }
 
     override fun getItemCount() = answers.size
