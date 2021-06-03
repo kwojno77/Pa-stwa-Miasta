@@ -79,7 +79,7 @@ class GameActivity : AppCompatActivity() {
                         dataSnapshot.child("letter").value.toString()
                     letterView.text = currentLetter
 
-                    if(dataSnapshot.child("stop_cliked").value == true) {
+                    if(dataSnapshot.child("stop_clicked").value == true) {
                         thread.changeTime(15)
                     }
                 }
@@ -205,6 +205,7 @@ class GameActivity : AppCompatActivity() {
     private fun showVoting() {
         val i = Intent(this, VotingActivity::class.java)
         i.putExtra("gameId", gameId)
+        i.putExtra("currRound", currentRound)
         startActivity(i)
         finish()
     }
@@ -253,8 +254,7 @@ class GameActivity : AppCompatActivity() {
                             (it.value as ArrayList<HashMap<String, String>>).last()
                         for (elem in map) {
                             if (dataSnapshot.child(it.key!!).child(currentRound.toString())
-                                    .child(elem.key).value == false
-                            )
+                                    .child(elem.key).value == false)
                                 reportToDatabase(it.key!!, elem.key)
                         }
                     }
@@ -267,7 +267,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun reportSlowRoundEnding() {
-        gameRef.child("Rounds").child(currentRound.toString()).child("stop_cliked").setValue(true)
+        gameRef.child("Rounds").child(currentRound.toString()).child("stop_clicked").setValue(true)
     }
 
     fun endRound() {
