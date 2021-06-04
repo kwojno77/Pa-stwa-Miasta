@@ -2,12 +2,12 @@ package com.example.pastwa_miasta.main_game
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pastwa_miasta.Player
 import com.example.pastwa_miasta.R
 import com.example.pastwa_miasta.ViewProfileActivity
 import com.example.pastwa_miasta.login.LoginActivity
@@ -20,8 +20,8 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.random.Random
+
 
 class GameActivity : AppCompatActivity() {
 
@@ -45,6 +45,9 @@ class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+        findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
+            viewProfile()
+        }
         answersList = ArrayList()
         setViews()
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -64,10 +67,6 @@ class GameActivity : AppCompatActivity() {
         checkRounds()
         findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { reportEnding() }
         timer()
-
-        findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
-            viewProfile()
-        }
     }
 
     private fun generateLetter() {
@@ -120,6 +119,7 @@ class GameActivity : AppCompatActivity() {
                 maxRounds = dataSnapshot.children.count()
                 if(currentRound > maxRounds) {
                     showGameResults()
+                    updateStats()
                     return
                 }
                 setRoundLabel()
@@ -285,5 +285,47 @@ class GameActivity : AppCompatActivity() {
         val i = Intent(this, ViewProfileActivity::class.java)
         i.putExtra("user", "null")
         startActivity(i)
+    }
+
+    private fun updateStats() {
+        var maximumPoints = 0
+        var currentPoints: MutableMap<String, Int> = mutableMapOf()
+        gameRef.child("Players")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    dataSnapshot.children.forEach {
+                        var player = it.key
+                        var points = it.child("Points").value as Int
+                        if (player != null) {
+                            currentPoints[player] = points
+                        }
+                        if (points >= maximumPoints) {
+                            maximumPoints = points
+                        }
+                    }
+                    recyclerView.adapter!!.notifyDataSetChanged()
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+            })
+        db.reference.child("Users")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    dataSnapshot.children.forEach {
+                        if (currentPoints.containsKey(it.key)) {
+                            var userPoints = it.child("Stats").child("Points").value as Int
+                            userPoints += currentPoints[it.key]!!
+                            it.key?.let { it1 -> db.reference.child("Users").child(it1).child("Stats").child("Points").setValue(userPoints) }
+                            if (currentPoints[it.key]!! == maximumPoints) {
+                                var wonGames = it.child("Stats").child("WonGames").value as Int
+                                wonGames += 1
+                                it.key?.let { it1 -> db.reference.child("Users").child(it1).child("Stats").child("WonGames").setValue(wonGames) }
+                            }
+                        }
+                    }
+                    recyclerView.adapter!!.notifyDataSetChanged()
+                }
+                override fun onCancelled(error: DatabaseError) {}
+            })
     }
 }

@@ -28,6 +28,9 @@ class ResultsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_results)
+        findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
+            viewProfile()
+        }
 
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
         gameId = intent.getStringExtra("gameId").toString()
@@ -46,10 +49,6 @@ class ResultsActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         playerCounterView = findViewById(R.id.letterView)
         playerCounterView.text = "Podsumowanie"
-
-        findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
-            viewProfile()
-        }
     }
 
     private fun viewProfile() {
@@ -57,6 +56,7 @@ class ResultsActivity : AppCompatActivity() {
         i.putExtra("user", "null")
         startActivity(i)
     }
+
     private fun getResultsFromDatabase() {
         gameRef.child("Players")
             .addListenerForSingleValueEvent(object : ValueEventListener {
