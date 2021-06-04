@@ -47,7 +47,7 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
         checkUser()
         gameId = intent.getStringExtra("gameId").toString()
         isHost = intent.getBooleanExtra("isHost", false)
-        //gameId = "1"
+        //gameId = "-MbIRIC70mk3dmdlYiX-"
         gameRef = db.reference.child("Games").child(gameId!!)
         joinedPlayersList = ArrayList()
         invitedPlayersList = ArrayList()
@@ -229,6 +229,7 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
         gameRef.child("Game_flag").setValue(true)
         val i = Intent(this, GameActivity::class.java)
         i.putExtra("gameId", gameId)
+        //i.putExtra("onlyResults", true)
         startActivity(i)
         finish()
     }

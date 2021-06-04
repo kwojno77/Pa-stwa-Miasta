@@ -5,6 +5,7 @@ import android.os.Parcelable
 
 class Answer(var category: String): Parcelable {
     var answer = ""
+    var isAccepted: AnswerState? = AnswerState.UNKNOWN
 
     constructor(parcel: Parcel) : this(parcel.readString().toString()) {
         answer = parcel.readString().toString()

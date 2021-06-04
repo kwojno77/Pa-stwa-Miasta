@@ -1,5 +1,6 @@
 package com.example.pastwa_miasta.main_game
 
+import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +17,7 @@ import java.nio.file.WatchEvent
 
 class InGameAdapter(
         var answers: ArrayList<Answer>,
+        private var context: Context
 ) :
     RecyclerView.Adapter<InGameAdapter.ViewHolder>() {
 
@@ -39,9 +42,19 @@ class InGameAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+        var ans = answers[position]
         viewHolder.iTextChange?.updatePosition(position)
-        viewHolder.categoryLabel?.text = answers[position].category
-        viewHolder.userInput.setText(answers[position].answer)
+        viewHolder.categoryLabel?.text = ans.category
+        viewHolder.userInput.setText(ans.answer)
+        if(ans.isAccepted == AnswerState.WRONG)
+            viewHolder.userInput.setBackgroundColor(
+                ContextCompat.getColor(context, R.color.wrong_red))
+        if(ans.isAccepted == AnswerState.FULL_POINTS)
+            viewHolder.userInput.setBackgroundColor(
+                ContextCompat.getColor(context, R.color.correct_green))
+        if(ans.isAccepted == AnswerState.REPEATED)
+            viewHolder.userInput.setBackgroundColor(
+                ContextCompat.getColor(context, R.color.repeated_yellow))
     }
 
     override fun getItemCount() = answers.size

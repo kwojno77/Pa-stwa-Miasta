@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="correct_green">#86ed74</color>
     <color name="wrong_red">#e85f5f</color>
+    <color name="repeated_yellow">#ffd633</color>
 </resources>

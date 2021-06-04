@@ -30,6 +30,7 @@ class GameActivity : AppCompatActivity() {
     private lateinit var timerView: TextView
     private lateinit var roundCounterView: TextView
     private lateinit var letterView: TextView
+    private lateinit var stopButton: FloatingActionButton
 
     private var currentRound: Int = 1
     private var maxRounds: Int = 0
@@ -38,7 +39,7 @@ class GameActivity : AppCompatActivity() {
     private lateinit var currentLetter: String
     private var isHost: Boolean = false
     private var thread : TimerThread = TimerThread(this)
-
+    private var onlyResults: Boolean = false
     private lateinit var db: FirebaseDatabase
     private lateinit var gameRef: DatabaseReference
 
@@ -51,11 +52,17 @@ class GameActivity : AppCompatActivity() {
         answersList = ArrayList()
         setViews()
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
-
         checkUser()
+        onlyResults = intent.getBooleanExtra("onlyResults", false)
         isHost = intent.getBooleanExtra("isHost", false)
         gameId = intent.getStringExtra("gameId").toString()
         gameRef = db.reference.child("Games").child(gameId!!)
+        checkRounds()
+        if(onlyResults) {
+            getResultsFromDatabase()
+            return
+        }
+
         generateLetter()
         val restoredAllAnswers = savedInstanceState?.getParcelableArrayList<Answer>("answersList")
         if (restoredAllAnswers != null) {
@@ -64,13 +71,33 @@ class GameActivity : AppCompatActivity() {
         } else {
             getGameCategories()
         }
-        checkRounds()
-        findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { reportEnding() }
+
         timer()
     }
 
+    private fun getResultsFromDatabase() {
+        gameRef.child("Users").child(myNick)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    dataSnapshot.children.forEach {
+                        if(it.key != "Points") {
+                            dataSnapshot.child(it.key.toString())
+                                .child(currentRound.toString()).children.forEach { answerIt->
+                                    var answer = Answer(it.key.toString())
+                                    answer.answer = answerIt.key.toString()
+                                    answer.isAccepted = AnswerState.valueOf(answerIt.value.toString())
+                                    answersList.add(answer)
+                            }
+                        }
+                    }
+                    recyclerView.adapter!!.notifyDataSetChanged()
+                }
+                override fun onCancelled(error: DatabaseError) {}
+            })
+    }
+
     private fun generateLetter() {
-        val source = "ABCDEFGHIJKLMNOPRSTUWYZ"
+        val source = "ABCDEFGHIJKLMNOPRSTUWZ"
         val letter = source[Random.nextInt(0, source.length)]
         gameRef.child("Rounds").child(currentRound.toString())
             .addValueEventListener(object : ValueEventListener {
@@ -112,7 +139,7 @@ class GameActivity : AppCompatActivity() {
             .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 dataSnapshot.children.forEach {
-                    if(it.value == true) {
+                    if(it.childrenCount > 0) {
                         currentRound++
                     }
                 }
@@ -167,9 +194,11 @@ class GameActivity : AppCompatActivity() {
         letterView = findViewById(R.id.letterView)
         roundCounterView = findViewById(R.id.roundCounterView)
         timerView = findViewById(R.id.timerView)
+        stopButton = findViewById(R.id.floatingActionButton)
+        stopButton.setOnClickListener { reportEnding() }
         recyclerView = findViewById(R.id.recyclerViewGame)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        val customAdapter = InGameAdapter(answersList)
+        val customAdapter = InGameAdapter(answersList, this)
         recyclerView.adapter = customAdapter
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
     }
