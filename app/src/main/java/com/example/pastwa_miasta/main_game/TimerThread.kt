@@ -3,7 +3,7 @@ package com.example.pastwa_miasta.main_game
 class TimerThread(private val gameActivity: GameActivity) : Thread() {
 
     var running: Boolean = true
-    private var time: Int = 90
+    var time: Int = 90
 
     override fun run() {
         val targetTime : Long = 1000 // milliseconds

@@ -2,6 +2,7 @@ package com.example.pastwa_miasta.main_game
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -46,9 +47,7 @@ class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
-        findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
-            viewProfile()
-        }
+
         answersList = ArrayList()
         setViews()
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -60,6 +59,8 @@ class GameActivity : AppCompatActivity() {
         checkRounds()
         if(onlyResults) {
             getResultsFromDatabase()
+            timerView.visibility = View.INVISIBLE
+            stopButton.visibility = View.INVISIBLE
             return
         }
 
@@ -76,7 +77,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun getResultsFromDatabase() {
-        gameRef.child("Users").child(myNick)
+        gameRef.child("Players").child(myNick)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     dataSnapshot.children.forEach {
@@ -119,6 +120,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun reportEnding() {
+        if(thread.time <= 15) return
         (recyclerView.adapter as InGameAdapter).isEditable = false
         reportSlowRoundEnding()
         thread.changeTime(15)
@@ -139,7 +141,7 @@ class GameActivity : AppCompatActivity() {
             .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 dataSnapshot.children.forEach {
-                    if(it.childrenCount > 0) {
+                    if(it.childrenCount > 0 && !onlyResults) {
                         currentRound++
                     }
                 }
@@ -267,7 +269,11 @@ class GameActivity : AppCompatActivity() {
         })
     }
 
-    private fun setAnswerTrueOrFalse(category: String, answer: String, value: Boolean) {
+    private fun setAnswerTrueOrFalse(category: String, answer: String, isCorrect: Boolean) {
+        var value: String = if(isCorrect)
+            "FULL_POINTS"
+        else
+            "WRONG"
         gameRef.child("Players").child(myNick)
             .child(category).child(currentRound.toString()).child(answer).setValue(value)
     }
@@ -310,12 +316,6 @@ class GameActivity : AppCompatActivity() {
         thread.running = false
     }
 
-    private fun viewProfile() {
-        val i = Intent(this, ViewProfileActivity::class.java)
-        i.putExtra("user", "null")
-        startActivity(i)
-    }
-
     private fun updateStats() {
         var maximumPoints = 0
         var currentPoints: MutableMap<String, Int> = mutableMapOf()
@@ -324,7 +324,7 @@ class GameActivity : AppCompatActivity() {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     dataSnapshot.children.forEach {
                         var player = it.key
-                        var points = it.child("Points").value as Int
+                        var points = (it.child("Points").value as Long).toInt()
                         if (player != null) {
                             currentPoints[player] = points
                         }
@@ -342,11 +342,11 @@ class GameActivity : AppCompatActivity() {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     dataSnapshot.children.forEach {
                         if (currentPoints.containsKey(it.key)) {
-                            var userPoints = it.child("Stats").child("Points").value as Int
+                            var userPoints = (it.child("Stats").child("Points").value as Long).toInt()
                             userPoints += currentPoints[it.key]!!
                             it.key?.let { it1 -> db.reference.child("Users").child(it1).child("Stats").child("Points").setValue(userPoints) }
                             if (currentPoints[it.key]!! == maximumPoints) {
-                                var wonGames = it.child("Stats").child("WonGames").value as Int
+                                var wonGames = (it.child("Stats").child("WonGames").value as Long).toInt()
                                 wonGames += 1
                                 it.key?.let { it1 -> db.reference.child("Users").child(it1).child("Stats").child("WonGames").setValue(wonGames) }
                             }

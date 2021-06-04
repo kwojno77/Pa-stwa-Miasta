@@ -37,9 +37,6 @@ class VotingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_voting)
-        findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
-            viewProfile()
-        }
         timerProgressBar = findViewById(R.id.timerProgressBar)
 
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -63,6 +60,7 @@ class VotingActivity : AppCompatActivity() {
     fun endVoting() {
         val i = Intent(this, GameActivity::class.java)
         i.putExtra("gameId", gameId)
+        i.putExtra("onlyResults", true)
         startActivity(i)
         finish()
     }
@@ -153,7 +151,7 @@ class VotingActivity : AppCompatActivity() {
 
     private fun setAnswerTrue(category: String, answer: String) {
         gameRef.child("Players").child(myNick)
-            .child(category).child(currentRound.toString()).child(answer).setValue(true)
+            .child(category).child(currentRound.toString()).child(answer).setValue("FULL_POINTS")
     }
 
     fun calculateVotes() {
@@ -181,11 +179,5 @@ class VotingActivity : AppCompatActivity() {
                 }
                 override fun onCancelled(error: DatabaseError) {}
             })
-    }
-
-    private fun viewProfile() {
-        val i = Intent(this, ViewProfileActivity::class.java)
-        i.putExtra("user", "null")
-        startActivity(i)
     }
 }
