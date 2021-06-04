@@ -28,6 +28,8 @@
 
         </activity>
         <activity android:name=".MainMenuActivity" />
+        <activity android:name=".ViewProfileActivity" />
+        <activity android:name=".MainActivity" />
         <activity android:name=".main_game.GameActivity" />
         <activity android:name=".waiting_room.RoomActivity">
         </activity>

@@ -3,15 +3,15 @@ package com.example.pastwa_miasta.create_game
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.NumberPicker
-import android.widget.Spinner
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pastwa_miasta.MainMenuActivity
 import com.example.pastwa_miasta.R
+import com.example.pastwa_miasta.ViewProfileActivity
 import com.example.pastwa_miasta.waiting_room.RoomActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class CreateGameActivity : AppCompatActivity() {
     //private lateinit var db: FirebaseDatabase
@@ -23,6 +23,10 @@ class CreateGameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_game)
+
+        findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
+            viewProfile()
+        }
 
         //var gameId = "1" // TYMCZASOWE
         //db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -84,6 +88,12 @@ class CreateGameActivity : AppCompatActivity() {
     fun confirm(view: View) {
         val i = Intent(this, RoomActivity::class.java)
         i.putExtra("isHost", true)
+        startActivity(i)
+    }
+
+    private fun viewProfile() {
+        val i = Intent(this, ViewProfileActivity::class.java)
+        i.putExtra("user", "null")
         startActivity(i)
     }
 }

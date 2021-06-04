@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.R
+import com.example.pastwa_miasta.ViewProfileActivity
 import com.example.pastwa_miasta.login.LoginActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -35,6 +37,10 @@ class VotingActivity : AppCompatActivity() {
         checkUser()
         setViews()
         getReported()
+
+        findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
+            viewProfile()
+        }
     }
 
     private fun checkUser() {
@@ -116,5 +122,11 @@ class VotingActivity : AppCompatActivity() {
             }
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+
+    private fun viewProfile() {
+        val i = Intent(this, ViewProfileActivity::class.java)
+        i.putExtra("user", "null")
+        startActivity(i)
     }
 }

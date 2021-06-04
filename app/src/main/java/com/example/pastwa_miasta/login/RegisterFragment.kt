@@ -94,6 +94,8 @@ class RegisterFragment : Fragment() {
                             }
                         }
                     db.reference.child("Users").child(nick).child("Uid").setValue(currentUser.uid)
+                    db.reference.child("Users").child(nick).child("Stats").child("WonGames").setValue(0)
+                    db.reference.child("Users").child(nick).child("Stats").child("Points").setValue(0)
                     clearForm()
                 }
             } else {

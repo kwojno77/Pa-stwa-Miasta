@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.R
+import com.example.pastwa_miasta.ViewProfileActivity
 import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.main_game.answers_voting.VotingActivity
 import com.example.pastwa_miasta.results.ResultsActivity
@@ -57,6 +58,10 @@ class GameActivity : AppCompatActivity() {
         checkRounds()
         findViewById<FloatingActionButton>(R.id.floatingActionButton).setOnClickListener { reportEnding() }
         timer()
+
+        findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
+            viewProfile()
+        }
     }
 
     private fun reportEnding() {
@@ -231,5 +236,11 @@ class GameActivity : AppCompatActivity() {
         thread.running = false
         Log.d("PM2021", "Round Ends")
         //TODO po naciśnięciu  przycisku lub jak czas się skończy
+    }
+
+    private fun viewProfile() {
+        val i = Intent(this, ViewProfileActivity::class.java)
+        i.putExtra("user", "null")
+        startActivity(i)
     }
 }

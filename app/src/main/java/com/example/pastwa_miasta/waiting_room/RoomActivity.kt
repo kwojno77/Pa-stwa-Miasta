@@ -15,8 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.Player
 import com.example.pastwa_miasta.R
+import com.example.pastwa_miasta.ViewProfileActivity
 import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.main_game.GameActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -54,6 +56,10 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
 
         findViewById<Button>(R.id.inviteButton).setOnClickListener {
             checkIfPlayerAlreadyJoined()
+        }
+
+        findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
+            viewProfile()
         }
 
         setViews()
@@ -221,5 +227,11 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
         i.putExtra("gameId", gameId)
         startActivity(i)
         finish()
+    }
+
+    private fun viewProfile() {
+        val i = Intent(this, ViewProfileActivity::class.java)
+        i.putExtra("user", "null")
+        startActivity(i)
     }
 }
