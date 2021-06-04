@@ -2,13 +2,12 @@ package com.example.pastwa_miasta.create_game
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pastwa_miasta.Player
-import com.example.pastwa_miasta.MainMenuActivity
 import com.example.pastwa_miasta.R
 import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.ViewProfileActivity
@@ -21,10 +20,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class CreateGameActivity : AppCompatActivity() {
 
+    private val CATEGORIES_MAX: Int = 6
+
     private lateinit var db: FirebaseDatabase
     private lateinit var myRef: DatabaseReference
-    private var listData : MutableList<SpinnerModel> = ArrayList()
-    private lateinit var recyclerView: RecyclerView
+    private var categorySpinners : MutableList<Spinner> = ArrayList()
     private lateinit var roundNumSpinner: Spinner
     private lateinit var categoryNumSpinner: Spinner
 
@@ -46,7 +46,6 @@ class CreateGameActivity : AppCompatActivity() {
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
         myRef = db.reference
         checkUser()
-        prepareAdapter()
         prepareSpinners()
     }
 
@@ -60,19 +59,12 @@ class CreateGameActivity : AppCompatActivity() {
         }
     }
 
-    // Prepares recyclerView adapter
-    private fun prepareAdapter() {
-        recyclerView = findViewById(R.id.spinnerRecyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = CategorySpinnerAdapter(listData, this) { position -> }
-        addCategorySpinner()
-    }
 
-    private fun addCategorySpinner() {
+    private fun setCategorySpinner() {
         val spinner = Spinner(this)
-        val s = SpinnerModel()
-        s.spinner = spinner
-        listData.add(s)
+        //val s = Spinner()
+        //s.spinner = spinner
+        categorySpinners.add(spinner)
     }
 
     // Prepares Spinners' Adapters
@@ -81,15 +73,19 @@ class CreateGameActivity : AppCompatActivity() {
         categoryNumSpinner = findViewById(R.id.categoryNumSpinner)
         createSpinner(roundNumSpinner, R.array.roundsNum)
         createSpinner(categoryNumSpinner, R.array.categoryNum)
-        categoryNumSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            override fun onNothingSelected(parent: AdapterView<*>?) { return}
 
+        prepareCategorySpinners()
+
+        categoryNumSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) { return }
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                listData.clear()
-                for (i in 0 until categoryNumSpinner.selectedItem.toString().toInt()) {
-                    addCategorySpinner()
+                val categoriesNumber: Int = categoryNumSpinner.selectedItem.toString().toInt()
+                for (i in 0 until categoriesNumber) {
+                    categorySpinners[i].visibility = View.VISIBLE
                 }
-                recyclerView.adapter!!.notifyDataSetChanged()
+                for (i in categoriesNumber until CATEGORIES_MAX) {
+                    categorySpinners[i].visibility = View.INVISIBLE
+                }
             }
         }
     }
@@ -106,7 +102,10 @@ class CreateGameActivity : AppCompatActivity() {
         }
     }
 
-    private fun createGame() {
+    private fun createGame(): Boolean {
+        if(isRepeated(categoryNumSpinner.selectedItem.toString().toInt())) {
+            return false
+        }
         gameId = myRef.child("Games").push().key.toString()
         var gameRef = myRef.child("Games").child(gameId)
         gameRef.child("Game_flag").setValue(false)
@@ -115,19 +114,33 @@ class CreateGameActivity : AppCompatActivity() {
             gameRef.child("Rounds").child((i+1).toString()).setValue(false)
         gameRef.child("Settings").child("Rounds_num").setValue(roundNumSpinner.selectedItemPosition+1)
         var categories = ArrayList<String>()
-        categories.add("Państwa")
-        categories.add("Miasta")
-        categories.add("Stany USA")
+        for(i in categorySpinners) {
+            if (i.visibility == View.VISIBLE) {
+                categories.add(i.selectedItem.toString())
+            }
+        }
         for(i in categories) {
             gameRef.child("Settings").child("Categories").child(i).setValue(true)
         }
+        return true
+    }
 
-        // TODO Trzeba wyciągnąć z tych spinnerów wybrane kategorie
+    private fun isRepeated(categoriesNum: Int): Boolean {
+        for(i in 0 until categoriesNum) {
+            for(j in i + 1 until categoriesNum) {
+                if(categorySpinners[i].selectedItem.toString() == categorySpinners[j].selectedItem.toString()) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     // Button takes you to a room activity
     fun confirm(view: View) {
-        createGame()
+        if (!createGame()){
+            return
+        }
         val i = Intent(this, RoomActivity::class.java)
         i.putExtra("isHost", true)
         i.putExtra("gameId", gameId)
@@ -138,5 +151,35 @@ class CreateGameActivity : AppCompatActivity() {
         val i = Intent(this, ViewProfileActivity::class.java)
         i.putExtra("user", "null")
         startActivity(i)
+    }
+
+    private fun prepareCategorySpinners() {
+        var categorySpinner = findViewById<Spinner>(R.id.categorySpinner1)
+        createSpinner(categorySpinner, R.array.categories)
+        categorySpinners.add(categorySpinner)
+
+        categorySpinner = findViewById<Spinner>(R.id.categorySpinner2)
+        createSpinner(categorySpinner, R.array.categories)
+        categorySpinners.add(categorySpinner)
+
+        categorySpinner = findViewById<Spinner>(R.id.categorySpinner3)
+        createSpinner(categorySpinner, R.array.categories)
+        categorySpinners.add(categorySpinner)
+
+        categorySpinner = findViewById<Spinner>(R.id.categorySpinner4)
+        createSpinner(categorySpinner, R.array.categories)
+        categorySpinners.add(categorySpinner)
+
+        categorySpinner = findViewById<Spinner>(R.id.categorySpinner5)
+        createSpinner(categorySpinner, R.array.categories)
+        categorySpinners.add(categorySpinner)
+
+        categorySpinner = findViewById<Spinner>(R.id.categorySpinner6)
+        createSpinner(categorySpinner, R.array.categories)
+        categorySpinners.add(categorySpinner)
+
+        for(i in categorySpinners) {
+            i.visibility = View.INVISIBLE
+        }
     }
 }
