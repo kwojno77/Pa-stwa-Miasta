@@ -2,6 +2,8 @@ package com.example.pastwa_miasta.main_game.answers_voting
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -11,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.R
 import com.example.pastwa_miasta.ViewProfileActivity
 import com.example.pastwa_miasta.login.LoginActivity
+import com.example.pastwa_miasta.main_game.GameActivity
+import com.example.pastwa_miasta.results.ResultsActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -24,13 +28,19 @@ class VotingActivity : AppCompatActivity() {
     private lateinit var gameId: String
     private lateinit var myNick: String
     private var currentRound = -1
+    private lateinit var timerProgressBar: ProgressBar
 
     private lateinit var db: FirebaseDatabase
     private lateinit var gameRef: DatabaseReference
+    private var thread : VotingTimerThread = VotingTimerThread(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_voting)
+        findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
+            viewProfile()
+        }
+        timerProgressBar = findViewById(R.id.timerProgressBar)
 
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
         gameId = intent.getStringExtra("gameId").toString()
@@ -39,10 +49,22 @@ class VotingActivity : AppCompatActivity() {
         checkUser()
         setViews()
         getReported()
+        timer()
+    }
 
-        findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
-            viewProfile()
-        }
+    private fun timer() {
+        thread.start()
+    }
+
+    fun updateTime(progress : Float) {
+        timerProgressBar.progress = (progress * 100).toInt()
+    }
+
+    fun endVoting() {
+        val i = Intent(this, GameActivity::class.java)
+        i.putExtra("gameId", gameId)
+        startActivity(i)
+        finish()
     }
 
     private fun checkUser() {
