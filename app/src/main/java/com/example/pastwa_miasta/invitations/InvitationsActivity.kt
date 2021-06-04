@@ -79,14 +79,21 @@ class InvitationsActivity: AppCompatActivity(), IButtonClick {
         val gameId = invitationsList[pos].gameId
         myRef.child("Users").child(myNick).child("Requests")
             .child(invitationsList[pos].gameOwnerNick).removeValue()
+        myRef.child("Games").child(gameId).child("Invited")
+            .child(myNick).removeValue()
+        myRef.child("Games").child(gameId).child("Players")
+            .child(myNick).child("Points").setValue(0)
         var i = Intent(this, RoomActivity::class.java)
         i.putExtra("gameId", gameId)
         startActivity(i)
     }
 
     override fun onDeclineClick(pos: Int) {
+        val gameId = invitationsList[pos].gameId
         myRef.child("Users").child(myNick).child("Requests")
             .child(invitationsList[pos].gameOwnerNick).removeValue()
+        myRef.child("Games").child(gameId).child("Invited")
+            .child(myNick).removeValue()
     }
 
     private fun viewProfile() {

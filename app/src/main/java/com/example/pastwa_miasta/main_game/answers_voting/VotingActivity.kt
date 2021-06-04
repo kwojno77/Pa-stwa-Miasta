@@ -23,6 +23,7 @@ class VotingActivity : AppCompatActivity() {
     private lateinit var answersList: ArrayList<Reported>
     private lateinit var gameId: String
     private lateinit var myNick: String
+    private var currentRound = -1
 
     private lateinit var db: FirebaseDatabase
     private lateinit var gameRef: DatabaseReference
@@ -33,6 +34,7 @@ class VotingActivity : AppCompatActivity() {
 
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
         gameId = intent.getStringExtra("gameId").toString()
+        currentRound = intent.getIntExtra("currRound", -1)
         gameRef = db.reference.child("Games").child(gameId!!)
         checkUser()
         setViews()
@@ -91,6 +93,7 @@ class VotingActivity : AppCompatActivity() {
                 vote(answer)
             }
             recyclerView.adapter!!.notifyDataSetChanged()
+            calculateVotes()
         }
     }
 
@@ -100,14 +103,16 @@ class VotingActivity : AppCompatActivity() {
     }
 
     private fun getReported() {
-        gameRef.child("Reported").addListenerForSingleValueEvent(object : ValueEventListener {
+        Thread.sleep(2000)
+        gameRef.child("Reported")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 dataSnapshot.children.forEach {
                     val map = it.value as HashMap<*, *>
                     for(nick in map) {
-                        for (country in nick.value as HashMap<*, *>) {
-                            if (nick.key == myNick)
-                                continue
+                        if(nick.key == myNick)
+                            continue
+                        for(country in nick.value as HashMap<*, *>) {
                             answersList.add(
                                 Reported(
                                     country.key as String,
@@ -122,6 +127,38 @@ class VotingActivity : AppCompatActivity() {
             }
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+
+    private fun setAnswerTrue(category: String, answer: String) {
+        gameRef.child("Players").child(myNick)
+            .child(category).child(currentRound.toString()).child(answer).setValue(true)
+    }
+
+    fun calculateVotes() {
+        gameRef.child("Reported")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    var positiveVote = 0
+                    var negativeVote = 0
+                    dataSnapshot.children.forEach { categories ->
+                        categories.children.forEach { players ->
+                            if(players.key == myNick) {
+                                players.children.forEach { answer ->
+                                    answer.child("Votes").children.forEach { vote ->
+                                        if(vote.value == true) positiveVote++
+                                        else negativeVote++
+                                    }
+                                    if(positiveVote > negativeVote) {
+                                        setAnswerTrue(categories.key.toString(), answer.key.toString())
+                                        // ew. dodanie na stale do keywords
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {}
+            })
     }
 
     private fun viewProfile() {

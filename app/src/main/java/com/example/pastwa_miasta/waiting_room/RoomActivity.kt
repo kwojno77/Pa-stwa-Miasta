@@ -8,7 +8,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,6 +32,7 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
     private lateinit var playerCounterView: TextView
     private lateinit var playerNickEditText: EditText
 
+    private var isHost: Boolean = false
     private lateinit var myNick: String
     private lateinit var gameId: String
 
@@ -44,13 +45,14 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
 
         checkUser()
-        //gameId = intent.getStringExtra("gameId").toString()
-        gameId = "1"
+        gameId = intent.getStringExtra("gameId").toString()
+        isHost = intent.getBooleanExtra("isHost", false)
+        //gameId = "1"
         gameRef = db.reference.child("Games").child(gameId!!)
         joinedPlayersList = ArrayList()
         invitedPlayersList = ArrayList()
 
-        findViewById<Button>(R.id.button).setOnClickListener {
+        findViewById<Button>(R.id.startGameButton).setOnClickListener {
             startGame()
         }
 
@@ -79,6 +81,7 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
     }
 
     private fun setViews() {
+        findViewById<Button>(R.id.startGameButton).isVisible = isHost
         playerNickEditText = findViewById(R.id.playersNicksToInviteEditText)
         invitedRecyclerView = findViewById(R.id.recyclerViewRoomInvited)
         invitedRecyclerView.layoutManager = LinearLayoutManager(this)
@@ -168,8 +171,8 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
     }
 
     private fun checkIfPlayerExists(nick: String) {
-        db.reference.child("Users").addListenerForSingleValueEvent(object :
-            ValueEventListener {
+        db.reference.child("Users")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if(dataSnapshot.child(nick).exists()) {
                     inviteInDatabase(nick)
@@ -184,7 +187,8 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
     }
 
     private fun listenForGameStart() {
-        gameRef.child("Game_flag").addValueEventListener(object : ValueEventListener {
+        gameRef.child("Game_flag")
+            .addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if(dataSnapshot.value == true)
                     startGame()
@@ -222,8 +226,8 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
     }
 
     fun startGame() {
+        gameRef.child("Game_flag").setValue(true)
         val i = Intent(this, GameActivity::class.java)
-        i.putExtra("myNick", myNick)
         i.putExtra("gameId", gameId)
         startActivity(i)
         finish()
