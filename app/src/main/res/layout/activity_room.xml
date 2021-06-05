@@ -5,21 +5,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/profile"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:contentDescription="avatar photo"
-        android:src="@drawable/sample_avatar_cropped"
-        app:maxImageSize="56dp"
-        app:tint="@null" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="20sp">
 
         <TextView
             android:id="@+id/letterView"

@@ -4,16 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:foregroundTint="#FFFFFF"
+    android:gravity="center"
     android:orientation="horizontal">
 
-    <ImageView
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/imageView"
-        android:layout_width="0px"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.8"
-        android:background="#FFFFFF"
-        android:textColor="#000000"
-        app:srcCompat="@drawable/ic_baseline_person_40" />
+        android:layout_gravity="end|bottom"
+        android:layout_margin="16dp"
+        android:contentDescription="avatar photo"
+        android:src="@drawable/sample_avatar_cropped"
+        app:maxImageSize="56dp"
+        app:tint="@null" />
 
     <TextView
         android:id="@+id/playerLabel"

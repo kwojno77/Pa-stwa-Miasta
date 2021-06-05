@@ -22,7 +22,7 @@ class ViewProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_profile)
-        val param = intent.getStringExtra("user").toString()
+        var param = intent.getStringExtra("user").toString()
 
         mAuth = FirebaseAuth.getInstance();
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -31,11 +31,9 @@ class ViewProfileActivity : AppCompatActivity() {
         findViewById<Button>(R.id.logoutButton).setOnClickListener {
             logout()
         }
-
-        if (param.equals("null")) {
-            setData()
-            findViewById<Button>(R.id.logoutButton).visibility = VISIBLE
-        }
+        if(param == "null") param = FirebaseAuth.getInstance().currentUser!!.displayName.toString()
+        setData(param)
+        findViewById<Button>(R.id.logoutButton).visibility = VISIBLE
     }
 
     fun logout() {
@@ -45,15 +43,15 @@ class ViewProfileActivity : AppCompatActivity() {
         startActivity(i)
     }
 
-    private fun setData() {
+    private fun setData(user: String) {
         var user = FirebaseAuth.getInstance().currentUser
         var nicknameText = findViewById<TextView>(R.id.nicknameText)
         if (user != null) {
-            nicknameText.setText(user.displayName.toString())
+            nicknameText.text = user.displayName.toString()
         }
         var emailText = findViewById<TextView>(R.id.emailText)
         if (user != null) {
-            emailText.setText(user.email.toString())
+            emailText.text = user.email.toString()
         }
 
         var points = findViewById<TextView>(R.id.points)

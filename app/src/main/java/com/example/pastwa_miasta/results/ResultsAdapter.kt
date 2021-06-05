@@ -7,16 +7,22 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.Player
 import com.example.pastwa_miasta.R
+import com.example.pastwa_miasta.waiting_room.IRecyclerViewClick
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class ResultsAdapter(
-        var players: ArrayList<Player>
+    var players: ArrayList<Player>,
+    private var iRecycleViewClick: IRecyclerViewClick,
 ) :
     RecyclerView.Adapter<ResultsAdapter.ViewHolder>() {
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var playerLabel: TextView? = null
+        var avatar: FloatingActionButton? = null
         init {
             playerLabel = view.findViewById(R.id.playerLabel)
+            avatar = view.findViewById(R.id.imageView)
+            avatar?.setOnClickListener { iRecycleViewClick.onJoinedAvatarClicked(adapterPosition) }
         }
     }
 

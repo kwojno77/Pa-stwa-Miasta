@@ -10,12 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.Player
 import com.example.pastwa_miasta.R
 import com.example.pastwa_miasta.ViewProfileActivity
+import com.example.pastwa_miasta.waiting_room.IRecyclerViewClick
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class ResultsActivity : AppCompatActivity() {
+class ResultsActivity : AppCompatActivity(), IRecyclerViewClick {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var playersList: ArrayList<Player>
@@ -28,9 +29,6 @@ class ResultsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_results)
-        findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
-            viewProfile()
-        }
 
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
         gameId = intent.getStringExtra("gameId").toString()
@@ -44,16 +42,16 @@ class ResultsActivity : AppCompatActivity() {
     private fun viewsInit() {
         recyclerView = findViewById(R.id.recyclerViewResult)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        val customAdapter = ResultsAdapter(playersList)
+        val customAdapter = ResultsAdapter(playersList, this)
         recyclerView.adapter = customAdapter
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         playerCounterView = findViewById(R.id.letterView)
         playerCounterView.text = "Podsumowanie"
     }
 
-    private fun viewProfile() {
+    private fun viewProfile(nick: String) {
         val i = Intent(this, ViewProfileActivity::class.java)
-        i.putExtra("user", "null")
+        i.putExtra("user", nick)
         startActivity(i)
     }
 
@@ -72,4 +70,10 @@ class ResultsActivity : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {}
         })
     }
+
+    override fun onJoinedAvatarClicked(pos: Int) {
+        viewProfile(playersList[pos].name)
+    }
+
+    override fun onInvitedAvatarClicked(adapterPosition: Int) {}
 }
