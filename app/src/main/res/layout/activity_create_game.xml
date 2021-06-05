@@ -9,147 +9,131 @@
     android:gravity="center"
     tools:context=".create_game.CreateGameActivity">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/profile"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:contentDescription="avatar photo"
-        android:src="@drawable/sample_avatar_cropped"
-        app:maxImageSize="56dp"
-        app:tint="@null" />
-
-    <TextView
-        android:id="@+id/createGameHeader"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/stw_rz_gr"
-        android:layout_margin="15sp"
-        android:textAlignment="center"
-        android:textSize="34sp" />
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_margin="10sp"
-            android:id="@+id/createGameTextView2"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/liczba_rund"
-            android:textAlignment="center"
-            android:textSize="20sp" />
+            android:orientation="vertical" >
 
-        <Spinner
-            android:layout_margin="10sp"
-            android:id="@+id/roundNumSpinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textAlignment="center"
-            android:spinnerMode="dialog" />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/profile"
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="16dp"
+                android:contentDescription="avatar photo"
+                android:src="@drawable/sample_avatar_cropped"
+                app:maxImageSize="56dp"
+                app:tint="@null" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/createGameHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/stw_rz_gr"
+                android:layout_margin="15sp"
+                android:textAlignment="center"
+                android:textSize="34sp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-        <TextView
-            android:layout_margin="10sp"
-            android:id="@+id/createGameTextView3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/liczba_kategorii"
-            android:textAlignment="center"
-            android:textSize="20sp" />
+                <TextView
+                    android:layout_margin="10sp"
+                    android:id="@+id/createGameTextView2"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/liczba_rund"
+                    android:textAlignment="center"
+                    android:textSize="20sp" />
 
-        <Spinner
-            android:id="@+id/categoryNumSpinner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="10sp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textAlignment="center"
-            android:spinnerMode="dialog" />
-    </LinearLayout>
+                <Spinner
+                    android:layout_margin="10sp"
+                    android:id="@+id/roundNumSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textAlignment="center"
+                    android:spinnerMode="dialog" />
 
-    <TextView
-        android:id="@+id/createGameTextView4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10sp"
-        android:text="@string/kategorie"
-        android:textAlignment="center"
-        android:textSize="20sp" />
+            </LinearLayout>
 
-    <Spinner
-        android:layout_margin="10sp"
-        android:id="@+id/categorySpinner1"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:spinnerMode="dialog" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-    <Spinner
-        android:layout_margin="10sp"
-        android:id="@+id/categorySpinner2"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textAlignment="center"
-        android:spinnerMode="dialog" />
+                <TextView
+                    android:layout_margin="10sp"
+                    android:id="@+id/createGameTextView3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/liczba_kategorii"
+                    android:textAlignment="center"
+                    android:textSize="20sp" />
 
-    <Spinner
-        android:layout_margin="10sp"
-        android:id="@+id/categorySpinner3"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textAlignment="center"
-        android:spinnerMode="dialog" />
+                <Spinner
+                    android:id="@+id/categoryNumSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10sp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textAlignment="center"
+                    android:spinnerMode="dialog" />
+            </LinearLayout>
 
-    <Spinner
-        android:layout_margin="10sp"
-        android:id="@+id/categorySpinner4"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textAlignment="center"
-        android:spinnerMode="dialog" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
 
-    <Spinner
-        android:layout_margin="10sp"
-        android:id="@+id/categorySpinner5"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textAlignment="center"
-        android:spinnerMode="dialog" />
+                <TextView
+                    android:layout_margin="10sp"
+                    android:id="@+id/createGameTextView4"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="@string/kategorie"
+                    android:textAlignment="center"
+                    android:textSize="20sp" />
 
-    <Spinner
-        android:layout_margin="10sp"
-        android:id="@+id/categorySpinner6"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textAlignment="center"
-        android:spinnerMode="dialog" />
+                <Button
+                    android:id="@+id/createGameRollButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="10dp"
+                    android:onClick="rollCategories"
+                    android:textAlignment="center"
+                    android:text="Losuj" />
+            </LinearLayout>
 
-    <Button
-        android:id="@+id/createGameConfirmButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="confirm"
-        android:paddingHorizontal="100dp"
-        android:paddingVertical="15dp"
-        android:text="Zatwierdź" />
+            <LinearLayout
+                android:id="@+id/main_linear"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            </LinearLayout>
 
+            <Button
+                android:id="@+id/createGameConfirmButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="confirm"
+                android:layout_marginTop="20dp"
+                android:layout_marginHorizontal="80dp"
+                android:paddingVertical="15dp"
+                android:text="Zatwierdź" />
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

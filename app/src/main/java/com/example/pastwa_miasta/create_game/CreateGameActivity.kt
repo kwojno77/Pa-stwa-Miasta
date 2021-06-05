@@ -1,22 +1,24 @@
 package com.example.pastwa_miasta.create_game
 
+import android.R.attr.left
+import android.R.attr.right
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.*
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.R
-import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.ViewProfileActivity
+import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.waiting_room.RoomActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlin.random.Random
+
 
 class CreateGameActivity : AppCompatActivity() {
 
@@ -59,14 +61,6 @@ class CreateGameActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun setCategorySpinner() {
-        val spinner = Spinner(this)
-        //val s = Spinner()
-        //s.spinner = spinner
-        categorySpinners.add(spinner)
-    }
-
     // Prepares Spinners' Adapters
     private fun prepareSpinners() {
         roundNumSpinner = findViewById(R.id.roundNumSpinner)
@@ -104,6 +98,7 @@ class CreateGameActivity : AppCompatActivity() {
 
     private fun createGame(): Boolean {
         if(isRepeated(categoryNumSpinner.selectedItem.toString().toInt())) {
+            Toast.makeText(this, "Wybrane kategorie nie mogą się powtarzać", Toast.LENGTH_SHORT).show()
             return false
         }
         gameId = myRef.child("Games").push().key.toString()
@@ -154,33 +149,44 @@ class CreateGameActivity : AppCompatActivity() {
         startActivity(i)
     }
 
+    fun rollCategories(view: View) {
+        val categoryArray: Array<String> = resources.getStringArray(R.array.categories)
+        val indexList = mutableListOf<Int>()
+        for (i in categoryArray.indices) {
+            indexList.add(i)
+        }
+        for (cs in 0 until categorySpinners.size) {
+            if (categorySpinners[cs].visibility == View.INVISIBLE) {
+                break
+            }
+            val random = Random.nextInt(0, indexList.size)
+            val index = indexList[random]
+            indexList.removeAt(random)
+            categorySpinners[cs].setSelection(index)
+        }
+    }
+
     private fun prepareCategorySpinners() {
-        var categorySpinner = findViewById<Spinner>(R.id.categorySpinner1)
-        createSpinner(categorySpinner, R.array.categories)
-        categorySpinners.add(categorySpinner)
+        val myLayout = findViewById<LinearLayout>(R.id.main_linear)
 
-        categorySpinner = findViewById<Spinner>(R.id.categorySpinner2)
-        createSpinner(categorySpinner, R.array.categories)
-        categorySpinners.add(categorySpinner)
+        for (i in 0 until CATEGORIES_MAX) {
+            val mySpinner = Spinner(this)
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.setMargins(200, 15, 200, 10)
 
-        categorySpinner = findViewById<Spinner>(R.id.categorySpinner3)
-        createSpinner(categorySpinner, R.array.categories)
-        categorySpinners.add(categorySpinner)
+            mySpinner.layoutParams = params
+            myLayout.addView(mySpinner)
+            createSpinner(mySpinner, R.array.categories)
+            categorySpinners.add(mySpinner)
 
-        categorySpinner = findViewById<Spinner>(R.id.categorySpinner4)
-        createSpinner(categorySpinner, R.array.categories)
-        categorySpinners.add(categorySpinner)
+        }
 
-        categorySpinner = findViewById<Spinner>(R.id.categorySpinner5)
-        createSpinner(categorySpinner, R.array.categories)
-        categorySpinners.add(categorySpinner)
-
-        categorySpinner = findViewById<Spinner>(R.id.categorySpinner6)
-        createSpinner(categorySpinner, R.array.categories)
-        categorySpinners.add(categorySpinner)
-
-        for(i in categorySpinners) {
+        for (i in categorySpinners) {
             i.visibility = View.INVISIBLE
         }
     }
+
 }
