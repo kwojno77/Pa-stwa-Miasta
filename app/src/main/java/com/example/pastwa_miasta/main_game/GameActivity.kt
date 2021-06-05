@@ -3,6 +3,7 @@ package com.example.pastwa_miasta.main_game
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -13,6 +14,7 @@ import com.example.pastwa_miasta.R
 import com.example.pastwa_miasta.ViewProfileActivity
 import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.main_game.answers_voting.VotingActivity
+import com.example.pastwa_miasta.main_game.answers_voting.VotingTimerThread
 import com.example.pastwa_miasta.results.ResultsActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
@@ -32,6 +34,7 @@ class GameActivity : AppCompatActivity() {
     private lateinit var roundCounterView: TextView
     private lateinit var letterView: TextView
     private lateinit var stopButton: FloatingActionButton
+    private lateinit var timerProgressBar: ProgressBar
 
     private var currentRound: Int = 1
     private var maxRounds: Int = 0
@@ -43,6 +46,7 @@ class GameActivity : AppCompatActivity() {
     private var onlyResults: Boolean = false
     private lateinit var db: FirebaseDatabase
     private lateinit var gameRef: DatabaseReference
+    private var resultsThread : ResultsTimerThread = ResultsTimerThread(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,11 +60,20 @@ class GameActivity : AppCompatActivity() {
         isHost = intent.getBooleanExtra("isHost", false)
         gameId = intent.getStringExtra("gameId").toString()
         gameRef = db.reference.child("Games").child(gameId!!)
+
+        gameRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                maxRounds = (dataSnapshot.child("Settings").child("Rounds_num").value as Long).toInt()}
+            override fun onCancelled(error: DatabaseError) {}})
+
         checkRounds()
         if(onlyResults) {
             getResultsFromDatabase()
             timerView.visibility = View.INVISIBLE
             stopButton.visibility = View.INVISIBLE
+
+            timerProgressBar.visibility = View.VISIBLE
+            resultsTimer()
             return
         }
 
@@ -165,6 +178,10 @@ class GameActivity : AppCompatActivity() {
         thread.start()
     }
 
+    private fun resultsTimer() {
+        resultsThread.start()
+    }
+
     fun updateTime(time : Int) {
         var minutes = 0
         var seconds = time
@@ -177,6 +194,19 @@ class GameActivity : AppCompatActivity() {
             timeString = "$minutes:0$seconds"
         }
         timerView.text = timeString
+    }
+
+    fun updateProgressBar(progress : Float) {
+        timerProgressBar.progress = (progress * 100).toInt()
+    }
+
+    fun endResults() {
+        db.reference.child("Games").child(gameId).child("CurrentRound").setValue(currentRound + 1)
+        val i = Intent(this, GameActivity::class.java)
+        i.putExtra("gameId", gameId)
+        i.putExtra("onlyResults", false)
+        startActivity(i)
+        finish()
     }
 
     private fun getGameCategories() {
@@ -196,6 +226,7 @@ class GameActivity : AppCompatActivity() {
         letterView = findViewById(R.id.letterView)
         roundCounterView = findViewById(R.id.roundCounterView)
         timerView = findViewById(R.id.timerView)
+        timerProgressBar = findViewById((R.id.timerProgressBar))
         stopButton = findViewById(R.id.floatingActionButton)
         stopButton.setOnClickListener { reportEnding() }
         recyclerView = findViewById(R.id.recyclerViewGame)

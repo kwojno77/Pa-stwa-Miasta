@@ -68,4 +68,18 @@
         android:layout_margin="10sp"
         app:srcCompat="@drawable/ic_baseline_back_hand_24" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:id="@+id/timerProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:minWidth="200dp"
+            android:visibility="invisible"/>
+    </LinearLayout>
+
 </LinearLayout>

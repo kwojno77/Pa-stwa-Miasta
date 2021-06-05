@@ -226,6 +226,7 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
 
     fun startGame() {
         gameRef.child("Game_flag").setValue(true)
+        db.reference.child("Games").child(gameId).child("CurrentRound").setValue(1)
         val i = Intent(this, GameActivity::class.java)
         i.putExtra("gameId", gameId)
         startActivity(i)
