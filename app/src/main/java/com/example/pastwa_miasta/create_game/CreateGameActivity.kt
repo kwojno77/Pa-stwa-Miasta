@@ -17,6 +17,7 @@ import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlin.random.Random
 
 class CreateGameActivity : AppCompatActivity() {
 
@@ -104,6 +105,7 @@ class CreateGameActivity : AppCompatActivity() {
 
     private fun createGame(): Boolean {
         if(isRepeated(categoryNumSpinner.selectedItem.toString().toInt())) {
+            Toast.makeText(this, "Wybrane kategorie nie mogą się powtarzać", Toast.LENGTH_SHORT).show()
             return false
         }
         gameId = myRef.child("Games").push().key.toString()
@@ -153,6 +155,23 @@ class CreateGameActivity : AppCompatActivity() {
         startActivity(i)
     }
 
+    fun rollCategories(view: View) {
+        val categoryArray: Array<String> = resources.getStringArray(R.array.categories)
+        val indexList = mutableListOf<Int>()
+        for (i in categoryArray.indices) {
+            indexList.add(i)
+        }
+        for (cs in 0 until categorySpinners.size) {
+            if (categorySpinners[cs].visibility == View.INVISIBLE) {
+                break
+            }
+            val random = Random.nextInt(0, indexList.size)
+            val index = indexList[random]
+            indexList.removeAt(random)
+            categorySpinners[cs].setSelection(index)
+        }
+    }
+
     private fun prepareCategorySpinners() {
         var categorySpinner = findViewById<Spinner>(R.id.categorySpinner1)
         createSpinner(categorySpinner, R.array.categories)
@@ -178,8 +197,9 @@ class CreateGameActivity : AppCompatActivity() {
         createSpinner(categorySpinner, R.array.categories)
         categorySpinners.add(categorySpinner)
 
-        for(i in categorySpinners) {
+        for (i in categorySpinners) {
             i.visibility = View.INVISIBLE
         }
     }
+
 }
