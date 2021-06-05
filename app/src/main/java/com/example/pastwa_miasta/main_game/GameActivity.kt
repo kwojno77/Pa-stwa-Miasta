@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.R
 import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.main_game.answers_voting.VotingActivity
-import com.example.pastwa_miasta.main_game.answers_voting.VotingTimerThread
 import com.example.pastwa_miasta.results.ResultsActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
@@ -39,6 +38,7 @@ class GameActivity : AppCompatActivity() {
     private lateinit var myNick: String
     private lateinit var gameId: String
     private lateinit var currentLetter: String
+    private lateinit var previousLetter: String
     private var isHost: Boolean = false
     private var thread : TimerThread = TimerThread(this)
     private var onlyResults: Boolean = false
@@ -59,10 +59,10 @@ class GameActivity : AppCompatActivity() {
         isHost = intent.getBooleanExtra("isHost", false)
         gameId = intent.getStringExtra("gameId").toString()
         gameRef = db.reference.child("Games").child(gameId!!)
-
+        previousLetter = intent.getStringExtra("previousLetter").toString()
         checkRounds()
         if(onlyResults) {
-            getResultsFromDatabase()
+            letterView.text = previousLetter
             timerView.visibility = View.INVISIBLE
             stopButton.visibility = View.INVISIBLE
 
@@ -89,7 +89,7 @@ class GameActivity : AppCompatActivity() {
                         if(it.key != "Points") {
                             dataSnapshot.child(it.key.toString())
                                 .child(currentRound.toString()).children.forEach { answerIt->
-                                    var answer = Answer(it.key.toString())
+                                    val answer = Answer(it.key.toString())
                                     answer.answer = answerIt.key.toString()
                                     answer.isAccepted = AnswerState.valueOf(answerIt.value.toString())
                                     answersList.add(answer)
@@ -162,6 +162,7 @@ class GameActivity : AppCompatActivity() {
                 }
                 setRoundLabel()
                 if(!onlyResults) generateLetter()
+                else getResultsFromDatabase()
             }
             override fun onCancelled(error: DatabaseError) {}})
     }
@@ -197,6 +198,10 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun endResults() {
+        if(ifWasIsLastRound()){
+            showGameResults()
+            return
+        }
         db.reference.child("Games").child(gameId).child("CurrentRound").setValue(currentRound + 1)
         ended = true
         val i = Intent(this, GameActivity::class.java)
@@ -272,6 +277,7 @@ class GameActivity : AppCompatActivity() {
         val i = Intent(this, VotingActivity::class.java)
         i.putExtra("gameId", gameId)
         i.putExtra("currRound", currentRound)
+        i.putExtra("previousLetter", currentLetter)
         startActivity(i)
         finish()
     }
@@ -279,13 +285,13 @@ class GameActivity : AppCompatActivity() {
     private fun verifyInDatabase() {
         db.reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                var playerRef = dataSnapshot.child("Games").child(gameId).child("Players").child(myNick)
+                val playerRef = dataSnapshot.child("Games").child(gameId).child("Players").child(myNick)
                 playerRef.children.forEach {
                     if(it.key.toString() != "Points") {
                         val map: HashMap<String, String> =
                             (it.value as ArrayList<HashMap<String, String>>).last()
                         for (elem in map) {
-                            var isCorrect =
+                            val isCorrect =
                                 dataSnapshot.child("Keywords").child(it.key!!).child(elem.key.toLowerCase())
                                     .exists() && elem.key.toLowerCase()[0].toString() == currentLetter.toLowerCase()
                             setAnswerTrueOrFalse(it.key!!, elem.key, isCorrect)
@@ -300,10 +306,14 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun setAnswerTrueOrFalse(category: String, answer: String, isCorrect: Boolean) {
-        var value: String = if(isCorrect)
-            "FULL_POINTS"
+        val value: String
+        if(isCorrect) {
+            value = "FULL_POINTS"
+            gameRef.child("Players").child(myNick).child("Points").setValue(
+                ServerValue.increment(10L))
+        }
         else
-            "WRONG"
+            value = "WRONG"
         gameRef.child("Players").child(myNick)
             .child(category).child(currentRound.toString()).child(answer).setValue(value)
     }
@@ -337,7 +347,8 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun reportSlowRoundEnding() {
-        gameRef.child("Rounds").child(currentRound.toString()).child("stop_clicked").setValue(true)
+        gameRef.child("Rounds").child(currentRound.toString())
+            .child("stop_clicked").setValue(true)
     }
 
     fun endRound() {
@@ -346,15 +357,19 @@ class GameActivity : AppCompatActivity() {
         verifyInDatabase()
     }
 
+    private fun ifWasIsLastRound(): Boolean {
+        return currentRound == maxRounds
+    }
+
     private fun updateStats() {
         var maximumPoints = 0
-        var currentPoints: MutableMap<String, Int> = mutableMapOf()
+        val currentPoints: MutableMap<String, Int> = mutableMapOf()
         gameRef.child("Players")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     dataSnapshot.children.forEach {
-                        var player = it.key
-                        var points = (it.child("Points").value as Long).toInt()
+                        val player = it.key
+                        val points = (it.child("Points").value as Long).toInt()
                         if (player != null) {
                             currentPoints[player] = points
                         }

@@ -28,6 +28,7 @@ class VotingActivity : AppCompatActivity() {
     private lateinit var answersList: ArrayList<Reported>
     private lateinit var gameId: String
     private lateinit var myNick: String
+    private lateinit var previousLetter: String
     private var currentRound = -1
     private lateinit var timerProgressBar: ProgressBar
 
@@ -43,6 +44,7 @@ class VotingActivity : AppCompatActivity() {
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
         gameId = intent.getStringExtra("gameId").toString()
         currentRound = intent.getIntExtra("currRound", -1)
+        previousLetter = intent.getStringExtra("previousLetter").toString()
         gameRef = db.reference.child("Games").child(gameId!!)
         checkUser()
         setViews()
@@ -63,6 +65,7 @@ class VotingActivity : AppCompatActivity() {
         val i = Intent(this, GameActivity::class.java)
         i.putExtra("gameId", gameId)
         i.putExtra("onlyResults", true)
+        i.putExtra("previousLetter", previousLetter)
         startActivity(i)
         finish()
     }
@@ -109,7 +112,7 @@ class VotingActivity : AppCompatActivity() {
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            var answer = answersList[viewHolder.adapterPosition]
+            val answer = answersList[viewHolder.adapterPosition]
             if(answer.wasAccepted == null) {
                 if(direction == ItemTouchHelper.RIGHT) {
                     answer.wasAccepted = true

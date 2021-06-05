@@ -107,13 +107,13 @@ class CreateGameActivity : AppCompatActivity() {
             return false
         }
         gameId = myRef.child("Games").push().key.toString()
-        var gameRef = myRef.child("Games").child(gameId)
+        val gameRef = myRef.child("Games").child(gameId)
         gameRef.child("Game_flag").setValue(false)
         gameRef.child("Players").child(myNick).child("Points").setValue(0)
         for(i in 0..roundNumSpinner.selectedItemPosition)
             gameRef.child("Rounds").child((i+1).toString()).setValue(false)
         gameRef.child("Settings").child("Rounds_num").setValue(roundNumSpinner.selectedItemPosition+1)
-        var categories = ArrayList<String>()
+        val categories = ArrayList<String>()
         for(i in categorySpinners) {
             if (i.visibility == View.VISIBLE) {
                 categories.add(i.selectedItem.toString())
@@ -145,6 +145,7 @@ class CreateGameActivity : AppCompatActivity() {
         i.putExtra("isHost", true)
         i.putExtra("gameId", gameId)
         startActivity(i)
+        finish()
     }
 
     private fun viewProfile() {
