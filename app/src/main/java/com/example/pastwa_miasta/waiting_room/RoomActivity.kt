@@ -186,6 +186,7 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
     }
 
     private fun listenForGameStart() {
+        if(isHost) return
         gameRef.child("Game_flag")
             .addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {

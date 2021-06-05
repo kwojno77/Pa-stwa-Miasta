@@ -1,6 +1,7 @@
 package com.example.pastwa_miasta.main_game.answers_voting
 
 class VotingTimerThread(private val votingActivity: VotingActivity) : Thread() {
+    @Volatile
     var running: Boolean = true
     private var timeMax: Float = 15.0F
     private var time: Float = 15.0F
@@ -20,6 +21,6 @@ class VotingTimerThread(private val votingActivity: VotingActivity) : Thread() {
             waitTime = targetTime - timeMillis
             sleep(waitTime)
         }
-        votingActivity.endVoting()
+        if(!votingActivity.ended) votingActivity.endVoting()
     }
 }

@@ -29,7 +29,7 @@
         <activity android:name=".ViewProfileActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".main_game.GameActivity" />
-        <activity android:name=".waiting_room.RoomActivity">
+        <activity android:name=".waiting_room.RoomActivity" >
         </activity>
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
         <activity android:name=".invitations.InvitationsActivity" />

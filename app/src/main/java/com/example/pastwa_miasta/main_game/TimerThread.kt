@@ -2,6 +2,7 @@ package com.example.pastwa_miasta.main_game
 
 class TimerThread(private val gameActivity: GameActivity) : Thread() {
 
+    @Volatile
     var running: Boolean = true
     var time: Int = 90
 
@@ -20,7 +21,7 @@ class TimerThread(private val gameActivity: GameActivity) : Thread() {
             waitTime = targetTime - timeMillis
             sleep(waitTime)
         }
-        gameActivity.endRound()
+        if(!gameActivity.ended) gameActivity.endRound()
     }
 
     fun changeTime(newTime: Int) {

@@ -23,6 +23,7 @@ import com.google.firebase.ktx.Firebase
 
 class VotingActivity : AppCompatActivity() {
 
+    var ended = false
     private lateinit var recyclerView: RecyclerView
     private lateinit var answersList: ArrayList<Reported>
     private lateinit var gameId: String
@@ -58,6 +59,7 @@ class VotingActivity : AppCompatActivity() {
     }
 
     fun endVoting() {
+        ended = true
         val i = Intent(this, GameActivity::class.java)
         i.putExtra("gameId", gameId)
         i.putExtra("onlyResults", true)
@@ -65,9 +67,17 @@ class VotingActivity : AppCompatActivity() {
         finish()
     }
 
+    override fun onStop() {
+        ended = true
+        thread.running = false
+        super.onStop()
+        finish()
+    }
+
     private fun checkUser() {
         val currUser = FirebaseAuth.getInstance().currentUser
         if (currUser == null) {
+            ended = true
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         } else {

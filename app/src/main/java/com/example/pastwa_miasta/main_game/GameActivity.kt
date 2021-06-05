@@ -9,9 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.pastwa_miasta.Player
 import com.example.pastwa_miasta.R
-import com.example.pastwa_miasta.ViewProfileActivity
 import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.main_game.answers_voting.VotingActivity
 import com.example.pastwa_miasta.main_game.answers_voting.VotingTimerThread
@@ -44,6 +42,7 @@ class GameActivity : AppCompatActivity() {
     private var isHost: Boolean = false
     private var thread : TimerThread = TimerThread(this)
     private var onlyResults: Boolean = false
+    var ended: Boolean = false
     private lateinit var db: FirebaseDatabase
     private lateinit var gameRef: DatabaseReference
     private var resultsThread : ResultsTimerThread = ResultsTimerThread(this)
@@ -125,6 +124,14 @@ class GameActivity : AppCompatActivity() {
             })
     }
 
+    override fun onStop() {
+        ended = true
+        resultsThread.running = false
+        thread.running = false
+        super.onStop()
+        finish()
+    }
+
     private fun reportEnding() {
         if(thread.time <= 15) return
         (recyclerView.adapter as InGameAdapter).isEditable = false
@@ -135,6 +142,7 @@ class GameActivity : AppCompatActivity() {
     private fun checkUser() {
         val currUser = FirebaseAuth.getInstance().currentUser
         if (currUser == null) {
+            ended = true
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         } else {
@@ -190,6 +198,7 @@ class GameActivity : AppCompatActivity() {
 
     fun endResults() {
         db.reference.child("Games").child(gameId).child("CurrentRound").setValue(currentRound + 1)
+        ended = true
         val i = Intent(this, GameActivity::class.java)
         i.putExtra("gameId", gameId)
         i.putExtra("onlyResults", false)
@@ -241,6 +250,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun showGameResults() {
+        ended = true
         val i = Intent(this, ResultsActivity::class.java)
         i.putExtra("gameId", gameId)
         startActivity(i)
@@ -258,6 +268,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun showVoting() {
+        ended = true
         val i = Intent(this, VotingActivity::class.java)
         i.putExtra("gameId", gameId)
         i.putExtra("currRound", currentRound)
@@ -330,9 +341,9 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun endRound() {
+        thread.running = false
         sendAnswersToDatabase()
         verifyInDatabase()
-        thread.running = false
     }
 
     private fun updateStats() {
