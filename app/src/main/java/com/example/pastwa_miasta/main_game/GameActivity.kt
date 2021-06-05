@@ -72,7 +72,6 @@ class GameActivity : AppCompatActivity() {
             return
         }
 
-        generateLetter()
         val restoredAllAnswers = savedInstanceState?.getParcelableArrayList<Answer>("answersList")
         if (restoredAllAnswers != null) {
             answersList = restoredAllAnswers
@@ -80,7 +79,6 @@ class GameActivity : AppCompatActivity() {
         } else {
             getGameCategories()
         }
-
         timer()
     }
 
@@ -155,6 +153,7 @@ class GameActivity : AppCompatActivity() {
                     return
                 }
                 setRoundLabel()
+                if(!onlyResults) generateLetter()
             }
             override fun onCancelled(error: DatabaseError) {}})
     }
