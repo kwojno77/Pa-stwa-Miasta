@@ -61,11 +61,6 @@ class GameActivity : AppCompatActivity() {
         gameId = intent.getStringExtra("gameId").toString()
         gameRef = db.reference.child("Games").child(gameId!!)
 
-        gameRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                maxRounds = (dataSnapshot.child("Settings").child("Rounds_num").value as Long).toInt()}
-            override fun onCancelled(error: DatabaseError) {}})
-
         checkRounds()
         if(onlyResults) {
             getResultsFromDatabase()
@@ -124,7 +119,7 @@ class GameActivity : AppCompatActivity() {
                         dataSnapshot.child("letter").value.toString()
                     letterView.text = currentLetter
 
-                    if(dataSnapshot.child("stop_clicked").value == true) {
+                    if(dataSnapshot.hasChild("stop_clicked") && dataSnapshot.child("stop_clicked").value == true) {
                         thread.changeTime(15)
                     }
                 }
@@ -150,15 +145,10 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun checkRounds() {
-        gameRef.child("Rounds")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+        gameRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                dataSnapshot.children.forEach {
-                    if(it.childrenCount > 0 && !onlyResults) {
-                        currentRound++
-                    }
-                }
-                maxRounds = dataSnapshot.children.count()
+                maxRounds = (dataSnapshot.child("Settings").child("Rounds_num").value as Long).toInt()
+                currentRound = (dataSnapshot.child("CurrentRound").value as Long).toInt()
                 if(currentRound > maxRounds) {
                     showGameResults()
                     updateStats()
@@ -166,8 +156,7 @@ class GameActivity : AppCompatActivity() {
                 }
                 setRoundLabel()
             }
-            override fun onCancelled(error: DatabaseError) {}
-        })
+            override fun onCancelled(error: DatabaseError) {}})
     }
 
     private fun setRoundLabel() {

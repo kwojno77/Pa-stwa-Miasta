@@ -63,7 +63,7 @@ class ResultsActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 dataSnapshot.children.forEach {
                     var player = Player(it.key!!)
-                    player.points = it.child("Points").value as Int
+                    player.points = (it.child("Points").value as Long).toInt()
                     playersList.add(player)
                 }
                 recyclerView.adapter!!.notifyDataSetChanged()
