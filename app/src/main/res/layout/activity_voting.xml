@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    android:background="@drawable/papers_bg1"
+    android:background="@drawable/main_bg5"
     tools:context=".main_game.answers_voting.VotingActivity">
 
     <TextView
