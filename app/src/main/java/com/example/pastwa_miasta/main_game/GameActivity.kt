@@ -96,11 +96,11 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
     }
 
     private fun setRepeatedAnswers() {
-        /*gameRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        gameRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
             }
             override fun onCancelled(error: DatabaseError) {}
-        })*/
+        })
     }
 
     private fun getResultsFromDatabase() {
