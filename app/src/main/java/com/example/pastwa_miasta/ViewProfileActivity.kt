@@ -20,7 +20,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class ViewProfileActivity : AppCompatActivity(), friendsRecyclerViewClick {
+class ViewProfileActivity : AppCompatActivity(), FriendsRecyclerViewClick {
     private lateinit var mAuth: FirebaseAuth
     private lateinit var db: FirebaseDatabase
     lateinit var currentUser: String
