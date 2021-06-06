@@ -9,10 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pastwa_miasta.Player
 import com.example.pastwa_miasta.R
+import com.example.pastwa_miasta.ViewProfileActivity
 import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.main_game.answers_voting.VotingActivity
 import com.example.pastwa_miasta.results.ResultsActivity
+import com.example.pastwa_miasta.results.ResultsAdapter
+import com.example.pastwa_miasta.waiting_room.IRecyclerViewClick
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -23,10 +27,12 @@ import kotlin.collections.ArrayList
 import kotlin.random.Random
 
 
-class GameActivity : AppCompatActivity() {
+class GameActivity : AppCompatActivity(), IRecyclerViewClick {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var answersList: ArrayList<Answer>
+    private lateinit var gameRecyclerView: RecyclerView
+    private lateinit var playersPointsRecyclerView: RecyclerView
+    private lateinit var myAnswersList: ArrayList<Answer>
+    private lateinit var playersPointsList: ArrayList<Player>
     private lateinit var timerView: TextView
     private lateinit var roundCounterView: TextView
     private lateinit var letterView: TextView
@@ -51,7 +57,8 @@ class GameActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
-        answersList = ArrayList()
+        myAnswersList = ArrayList()
+        playersPointsList = ArrayList()
         setViews()
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
         checkUser()
@@ -62,19 +69,19 @@ class GameActivity : AppCompatActivity() {
         previousLetter = intent.getStringExtra("previousLetter").toString()
         checkRounds()
         if(onlyResults) {
+            getPlayersPointsFromDatabase()
             letterView.text = previousLetter
             timerView.visibility = View.INVISIBLE
             stopButton.visibility = View.INVISIBLE
-
             timerProgressBar.visibility = View.VISIBLE
             resultsTimer()
             return
         }
 
-        val restoredAllAnswers = savedInstanceState?.getParcelableArrayList<Answer>("answersList")
+        val restoredAllAnswers = savedInstanceState?.getParcelableArrayList<Answer>("myAnswersList")
         if (restoredAllAnswers != null) {
-            answersList = restoredAllAnswers
-            (recyclerView.adapter as InGameAdapter).answers = restoredAllAnswers
+            myAnswersList = restoredAllAnswers
+            (gameRecyclerView.adapter as InGameAdapter).answers = restoredAllAnswers
         } else {
             getGameCategories()
         }
@@ -92,11 +99,11 @@ class GameActivity : AppCompatActivity() {
                                     val answer = Answer(it.key.toString())
                                     answer.answer = answerIt.key.toString()
                                     answer.isAccepted = AnswerState.valueOf(answerIt.value.toString())
-                                    answersList.add(answer)
+                                    myAnswersList.add(answer)
                             }
                         }
                     }
-                    recyclerView.adapter!!.notifyDataSetChanged()
+                    gameRecyclerView.adapter!!.notifyDataSetChanged()
                 }
                 override fun onCancelled(error: DatabaseError) {}
             })
@@ -123,6 +130,7 @@ class GameActivity : AppCompatActivity() {
                 override fun onCancelled(error: DatabaseError) {}
             })
         gameRef.child("Reported").removeValue()
+        getPlayersPointsFromDatabase()
     }
 
     override fun onStop() {
@@ -135,7 +143,7 @@ class GameActivity : AppCompatActivity() {
 
     private fun reportEnding() {
         if(thread.time <= 15) return
-        (recyclerView.adapter as InGameAdapter).isEditable = false
+        (gameRecyclerView.adapter as InGameAdapter).isEditable = false
         reportSlowRoundEnding()
         thread.changeTime(15)
     }
@@ -217,9 +225,9 @@ class GameActivity : AppCompatActivity() {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     dataSnapshot.children.forEach {
-                        answersList.add(Answer(it.key.toString()))
+                        myAnswersList.add(Answer(it.key.toString()))
                     }
-                    recyclerView.adapter?.notifyDataSetChanged()
+                    gameRecyclerView.adapter?.notifyDataSetChanged()
                 }
                 override fun onCancelled(error: DatabaseError) {}
             })
@@ -232,26 +240,54 @@ class GameActivity : AppCompatActivity() {
         timerProgressBar = findViewById((R.id.timerProgressBar))
         stopButton = findViewById(R.id.floatingActionButton)
         stopButton.setOnClickListener { reportEnding() }
-        recyclerView = findViewById(R.id.recyclerViewGame)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        val customAdapter = InGameAdapter(answersList, this)
-        recyclerView.adapter = customAdapter
-        recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        gameRecyclerViewInit()
+        playersPointsRecyclerViewInit()
+    }
+
+    private fun gameRecyclerViewInit() {
+        gameRecyclerView = findViewById(R.id.recyclerViewGame)
+        gameRecyclerView.layoutManager = LinearLayoutManager(this)
+        val customAdapter = InGameAdapter(myAnswersList, this)
+        gameRecyclerView.adapter = customAdapter
+        gameRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+    }
+
+    private fun playersPointsRecyclerViewInit() {
+        playersPointsRecyclerView = findViewById(R.id.playersPointsRecyclerViewer)
+        playersPointsRecyclerView.layoutManager = LinearLayoutManager(this)
+        val customAdapter = ResultsAdapter(playersPointsList, this)
+        playersPointsRecyclerView.adapter = customAdapter
+        playersPointsRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+    }
+
+    private fun getPlayersPointsFromDatabase() {
+        gameRef.child("Players")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    dataSnapshot.children.forEach {
+                        var player = Player(it.key!!)
+                        player.points = (it.child("Points").value as Long).toInt()
+                        playersPointsList.add(player)
+                    }
+                    playersPointsRecyclerView.adapter!!.notifyDataSetChanged()
+                }
+                override fun onCancelled(error: DatabaseError) {}
+            })
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.run {
-            putParcelableArrayList("answersList", java.util.ArrayList(answersList))
+            putParcelableArrayList("myAnswersList", java.util.ArrayList(myAnswersList))
         }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        val restoredAllAnswers = savedInstanceState.getParcelableArrayList<Answer>("answersList")
+        val restoredAllAnswers = savedInstanceState.getParcelableArrayList<Answer>("myAnswersList")
         if (restoredAllAnswers != null) {
-            answersList = restoredAllAnswers
-            (recyclerView.adapter as InGameAdapter).answers = restoredAllAnswers
+            myAnswersList = restoredAllAnswers
+            (gameRecyclerView.adapter as InGameAdapter).answers = restoredAllAnswers
         }
     }
 
@@ -264,7 +300,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun sendAnswersToDatabase() {
-        for(answer in answersList) {
+        for(answer in myAnswersList) {
             var answer1 = answer.answer
             if(answer1.isEmpty())
                 answer1 = "-"
@@ -300,7 +336,7 @@ class GameActivity : AppCompatActivity() {
                     }
                 }
                 autoReport()
-                recyclerView.adapter?.notifyDataSetChanged()
+                gameRecyclerView.adapter?.notifyDataSetChanged()
             }
             override fun onCancelled(error: DatabaseError) {}
         })
@@ -341,7 +377,7 @@ class GameActivity : AppCompatActivity() {
                     }
                 }
                 showVoting()
-                recyclerView.adapter?.notifyDataSetChanged()
+                gameRecyclerView.adapter?.notifyDataSetChanged()
             }
             override fun onCancelled(error: DatabaseError) {}
         })
@@ -378,7 +414,7 @@ class GameActivity : AppCompatActivity() {
                             maximumPoints = points
                         }
                     }
-                    recyclerView.adapter!!.notifyDataSetChanged()
+                    gameRecyclerView.adapter!!.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
@@ -398,9 +434,13 @@ class GameActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    recyclerView.adapter!!.notifyDataSetChanged()
+                    gameRecyclerView.adapter!!.notifyDataSetChanged()
                 }
                 override fun onCancelled(error: DatabaseError) {}
             })
     }
+
+    override fun onJoinedAvatarClicked(pos: Int) {}
+
+    override fun onInvitedAvatarClicked(adapterPosition: Int) {}
 }

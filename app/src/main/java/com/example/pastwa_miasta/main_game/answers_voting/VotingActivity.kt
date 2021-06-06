@@ -169,16 +169,16 @@ class VotingActivity : AppCompatActivity() {
             ServerValue.increment(10L))
     }
 
-    fun calculateVotes() {
+    private fun calculateVotes() {
         gameRef.child("Reported")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    var positiveVote = 0
-                    var negativeVote = 0
                     dataSnapshot.children.forEach { categories ->
                         categories.children.forEach { players ->
                             if(players.key == myNick) {
                                 players.children.forEach { answer ->
+                                    var positiveVote = 0
+                                    var negativeVote = 0
                                     answer.child("Votes").children.forEach { vote ->
                                         if(vote.value == true) positiveVote++
                                         else negativeVote++
