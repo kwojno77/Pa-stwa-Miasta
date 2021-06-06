@@ -97,6 +97,7 @@ class RegisterFragment : Fragment() {
                     db.reference.child("Users").child(nick).child("Email").setValue(currentUser.email)
                     db.reference.child("Users").child(nick).child("Stats").child("WonGames").setValue(0)
                     db.reference.child("Users").child(nick).child("Stats").child("Points").setValue(0)
+                    db.reference.child("Users").child(nick).child("Friends").setValue(true)
                     clearForm()
                 }
             } else {
