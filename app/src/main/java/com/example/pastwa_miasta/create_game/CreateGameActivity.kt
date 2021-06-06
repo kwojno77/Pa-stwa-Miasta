@@ -1,9 +1,8 @@
 package com.example.pastwa_miasta.create_game
 
-import android.R.attr.left
-import android.R.attr.right
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import android.widget.LinearLayout
@@ -40,6 +39,9 @@ class CreateGameActivity : AppCompatActivity() {
         findViewById<FloatingActionButton>(R.id.profile).setOnClickListener {
             viewProfile()
         }
+        findViewById<Button>(R.id.createGameRollButton).setOnClickListener {
+            rollCategories()
+        }
 
         //var gameId = "1" // TYMCZASOWE
         //db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -49,6 +51,12 @@ class CreateGameActivity : AppCompatActivity() {
         myRef = db.reference
         checkUser()
         prepareSpinners()
+        setDefaultOptions()
+    }
+
+    private fun setDefaultOptions() {
+        roundNumSpinner.setSelection(2)
+        categoryNumSpinner.setSelection(3)
     }
 
     private fun checkUser() {
@@ -149,7 +157,7 @@ class CreateGameActivity : AppCompatActivity() {
         startActivity(i)
     }
 
-    fun rollCategories(view: View) {
+    private fun rollCategories() {
         val categoryArray: Array<String> = resources.getStringArray(R.array.categories)
         val indexList = mutableListOf<Int>()
         for (i in categoryArray.indices) {
@@ -183,7 +191,7 @@ class CreateGameActivity : AppCompatActivity() {
             categorySpinners.add(mySpinner)
 
         }
-
+        rollCategories()
         for (i in categorySpinners) {
             i.visibility = View.INVISIBLE
         }

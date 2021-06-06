@@ -112,7 +112,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginHorizontal="10dp"
-                    android:onClick="rollCategories"
                     android:textAlignment="center"
                     android:text="Losuj" />
             </LinearLayout>
