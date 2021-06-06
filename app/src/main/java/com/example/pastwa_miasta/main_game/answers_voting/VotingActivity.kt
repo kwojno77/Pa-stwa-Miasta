@@ -65,6 +65,7 @@ class VotingActivity : AppCompatActivity() {
     fun endVoting() {
         ended = true
         calculateVotes()
+        Thread.sleep(2000)
         val i = Intent(this, GameActivity::class.java)
         i.putExtra("gameId", gameId)
         i.putExtra("onlyResults", true)
@@ -169,6 +170,7 @@ class VotingActivity : AppCompatActivity() {
             .child(category).child(currentRound.toString()).child(answer).setValue("FULL_POINTS")
         gameRef.child("Players").child(myNick).child("Points").setValue(
             ServerValue.increment(10L))
+        gameRef.child("Answers").push().child(myNick).setValue(answer.toLowerCase())
         addKeywordToDatabase(category, answer)
     }
 

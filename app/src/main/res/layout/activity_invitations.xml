@@ -5,29 +5,37 @@
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/profile"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_margin="16dp"
-        android:contentDescription="avatar photo"
-        android:src="@drawable/sample_avatar_cropped"
-        app:maxImageSize="56dp"
-        app:tint="@null" />
-
-    <TextView
-        android:id="@+id/invitationsTextView"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40sp"
-        android:autoSizeMaxTextSize="32sp"
-        android:autoSizeMinTextSize="18sp"
-        android:autoSizeStepGranularity="1sp"
-        android:autoSizeTextType="uniform"
-        android:text="@string/zaproszenia"
-        android:textAlignment="center"
-        android:textStyle="bold"
-        android:layout_margin="10sp"/>
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/invitationsTextView"
+            android:layout_width="0px"
+            android:layout_weight="2"
+            android:layout_height="40sp"
+            android:layout_margin="10sp"
+            android:autoSizeMaxTextSize="32sp"
+            android:autoSizeMinTextSize="18sp"
+            android:autoSizeStepGranularity="1sp"
+            android:autoSizeTextType="uniform"
+            android:text="@string/zaproszenia"
+            android:textAlignment="center"
+            android:textStyle="bold" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/profile"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/avatar_photo"
+            android:src="@drawable/sample_avatar_cropped"
+            app:maxImageSize="56dp"
+            app:tint="@null" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewInv"

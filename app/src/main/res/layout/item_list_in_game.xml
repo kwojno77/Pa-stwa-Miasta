@@ -8,7 +8,7 @@
     <TextView
         android:id="@+id/categoryLabel"
         android:layout_width="0px"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
         android:autoSizeMaxTextSize="32sp"
@@ -20,7 +20,7 @@
     <EditText
         android:id="@+id/answer"
         android:layout_width="0px"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:paddingStart="7sp"
         android:autoSizeMaxTextSize="32sp"
         android:autoSizeMinTextSize="17sp"
