@@ -61,6 +61,10 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
             checkIfPlayerAlreadyJoined()
         }
 
+        findViewById<Button>(R.id.friendsButton).setOnClickListener {
+            friendsList()
+        }
+
         setViews()
         listenForJoiningPlayers()
         listenForInvitedPlayers()
@@ -270,5 +274,11 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
                 .show()
         }
         backPressed = System.currentTimeMillis()
+    }
+
+    private fun friendsList() {
+        val i = Intent(this, FriendsList::class.java)
+        i.putExtra("gameId", gameId)
+        startActivity(i)
     }
 }

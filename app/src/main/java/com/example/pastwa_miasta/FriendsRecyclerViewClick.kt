@@ -1,5 +1,5 @@
 package com.example.pastwa_miasta
 
-interface friendsRecyclerViewClick {
+interface FriendsRecyclerViewClick {
     fun onAvatarClicked(adapterPosition: Int)
 }
