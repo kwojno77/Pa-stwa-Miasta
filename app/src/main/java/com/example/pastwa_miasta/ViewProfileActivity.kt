@@ -60,8 +60,9 @@ class ViewProfileActivity : AppCompatActivity(), friendsRecyclerViewClick {
     fun logout() {
         mAuth.signOut();
         val i = Intent(this, LoginActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK); //nie działa tak jak powinno
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i)
+        finish()
     }
 
     private fun deleteFriend(user: String) {
@@ -71,7 +72,6 @@ class ViewProfileActivity : AppCompatActivity(), friendsRecyclerViewClick {
         findViewById<Button>(R.id.logoutButton).setOnClickListener {
             addFriend(user)
         }
-        getFriendsList()
     }
 
     private fun addFriend(user: String) {
@@ -81,8 +81,6 @@ class ViewProfileActivity : AppCompatActivity(), friendsRecyclerViewClick {
         findViewById<Button>(R.id.logoutButton).setOnClickListener {
             deleteFriend(user)
         }
-        friendsList.add(Player(user))
-        friendsRecyclerView.adapter!!.notifyDataSetChanged()
     }
 
     private fun viewOtherPlayer(user: String) {
@@ -174,8 +172,6 @@ class ViewProfileActivity : AppCompatActivity(), friendsRecyclerViewClick {
                     if (!dataSnapshot.hasChild(friend)) {
                         db.reference.child("Users").child(currentUser).child("Friends").child(friend).setValue(true)
                         db.reference.child("Users").child(friend).child("Friends").child(currentUser).setValue(true)
-                        friendsList.add(Player(friend))
-                        friendsRecyclerView.adapter!!.notifyDataSetChanged()
                         }
                     else { playerNickEditText.error = "Ten gracz już jest Twoim znajomym!" }
                     }
@@ -184,10 +180,10 @@ class ViewProfileActivity : AppCompatActivity(), friendsRecyclerViewClick {
     }
 
     private fun getFriendsList() {
-        friendsList.clear()
         db.reference.child("Users").child(currentUser).child("Friends")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    friendsList.clear()
                     dataSnapshot.children.forEach {
                         friendsList.add(Player(it.key.toString()))
                     }
@@ -211,5 +207,11 @@ class ViewProfileActivity : AppCompatActivity(), friendsRecyclerViewClick {
                     Log.e("Firebase ", "Error: ", error.toException())
                 }
             })
+    }
+
+    @Override
+    override fun onResume() {
+        super.onResume()
+        getFriendsList()
     }
 }
