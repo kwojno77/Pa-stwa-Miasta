@@ -25,6 +25,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.random.Random
 
 
@@ -74,6 +75,7 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
         previousLetter = intent.getStringExtra("previousLetter").toString()
         checkRounds()
         if(onlyResults) {
+            setRepeatedAnswers()
             playersAnswerRecyclerView.visibility = View.VISIBLE
             letterView.text = previousLetter
             timerView.visibility = View.INVISIBLE
@@ -91,6 +93,14 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
             getGameCategories()
         }
         timer()
+    }
+
+    private fun setRepeatedAnswers() {
+        /*gameRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })*/
     }
 
     private fun getResultsFromDatabase() {
@@ -370,6 +380,7 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                     if(it.key.toString() != "Points") {
                         val map: HashMap<String, String> =
                             (it.value as ArrayList<HashMap<String, String>>).last()
+                        countAnswers(map, dataSnapshot, gameId)
                         for (elem in map) {
                             val isCorrect =
                                 dataSnapshot.child("Keywords").child(it.key!!).child(elem.key.toLowerCase())
@@ -383,6 +394,18 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
             }
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+
+    private fun countAnswers(map: HashMap<String, String>, dataSnapshot: DataSnapshot, gameId: String) {
+        for (elem in map) {
+            if (dataSnapshot.child(gameId).child("Answers").child(elem.key.toLowerCase()).exists()) {
+                gameRef.child("Answers").child(elem.key.toLowerCase()).setValue(
+                    ServerValue.increment(1L)
+                )
+            } else if (elem.key.toLowerCase().length > 1) {
+                gameRef.child("Answers").child(elem.key.toLowerCase()).setValue(1L)
+            }
+        }
     }
 
     private fun setAnswerTrueOrFalse(category: String, answer: String, isCorrect: Boolean) {
