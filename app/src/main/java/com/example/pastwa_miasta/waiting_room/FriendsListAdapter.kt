@@ -1,4 +1,4 @@
-package com.example.pastwa_miasta.main_game
+package com.example.pastwa_miasta.waiting_room
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.Player
 import com.example.pastwa_miasta.R
-import com.example.pastwa_miasta.waiting_room.FriendsListRecyclerViewClick
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class FriendsListAdapter (
@@ -32,13 +31,13 @@ class FriendsListAdapter (
         }
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): FriendsListAdapter.ViewHolder {
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(viewGroup.context)
             .inflate(R.layout.item_list_in_friends_list, viewGroup, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(viewHolder: FriendsListAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val id: Int = position+1
         viewHolder.playerLabel?.text = players[position].name
     }
