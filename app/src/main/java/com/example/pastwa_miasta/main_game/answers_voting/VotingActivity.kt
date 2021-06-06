@@ -62,6 +62,7 @@ class VotingActivity : AppCompatActivity() {
 
     fun endVoting() {
         ended = true
+        calculateVotes()
         val i = Intent(this, GameActivity::class.java)
         i.putExtra("gameId", gameId)
         i.putExtra("onlyResults", true)
@@ -126,7 +127,6 @@ class VotingActivity : AppCompatActivity() {
                 vote(answer)
             }
             recyclerView.adapter!!.notifyDataSetChanged()
-            calculateVotes()
         }
     }
 
@@ -165,6 +165,8 @@ class VotingActivity : AppCompatActivity() {
     private fun setAnswerTrue(category: String, answer: String) {
         gameRef.child("Players").child(myNick)
             .child(category).child(currentRound.toString()).child(answer).setValue("FULL_POINTS")
+        gameRef.child("Players").child(myNick).child("Points").setValue(
+            ServerValue.increment(10L))
     }
 
     fun calculateVotes() {

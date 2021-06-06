@@ -122,6 +122,7 @@ class GameActivity : AppCompatActivity() {
                 }
                 override fun onCancelled(error: DatabaseError) {}
             })
+        gameRef.child("Reported").removeValue()
     }
 
     override fun onStop() {
