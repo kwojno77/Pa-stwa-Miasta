@@ -1,31 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:foregroundTint="#FFFFFF"
-    android:orientation="horizontal">
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="8dp"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true">
 
-    <ImageView
-        android:id="@+id/reportLogo"
-        android:layout_width="0px"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.8"
-        android:background="#FFFFFF"
-        app:srcCompat="@drawable/ic_baseline_quiz_65"
-        android:contentDescription="@string/logo"/>
+        android:foregroundTint="#FFFFFF"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/reportLabel"
-        android:layout_width="0px"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:layout_margin="6sp"
-        android:autoSizeMaxTextSize="32sp"
-        android:autoSizeMinTextSize="15sp"
-        android:autoSizeStepGranularity="1sp"
-        android:autoSizeTextType="uniform"
-        android:gravity="center"
-        android:textColor="#000000" />
+        <ImageView
+            android:id="@+id/reportLogo"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:background="#FFFFFF"
+            app:srcCompat="@drawable/ic_baseline_quiz_65"
+            android:contentDescription="@string/logo"/>
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/reportLabel"
+            android:layout_width="0px"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:layout_margin="6sp"
+            android:autoSizeMaxTextSize="32sp"
+            android:autoSizeMinTextSize="15sp"
+            android:autoSizeStepGranularity="1sp"
+            android:autoSizeTextType="uniform"
+            android:gravity="center"
+            android:textColor="#000000" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

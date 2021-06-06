@@ -11,7 +11,6 @@ import com.example.pastwa_miasta.Player
 import com.example.pastwa_miasta.R
 import com.example.pastwa_miasta.ViewProfileActivity
 import com.example.pastwa_miasta.waiting_room.IRecyclerViewClick
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -64,6 +63,7 @@ class ResultsActivity : AppCompatActivity(), IRecyclerViewClick {
                     player.points = (it.child("Points").value as Long).toInt()
                     playersList.add(player)
                 }
+                playersList.sortByDescending { it.points }
                 recyclerView.adapter!!.notifyDataSetChanged()
             }
 
@@ -77,3 +77,4 @@ class ResultsActivity : AppCompatActivity(), IRecyclerViewClick {
 
     override fun onInvitedAvatarClicked(adapterPosition: Int) {}
 }
+

@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context=".main_game.answers_voting.VotingActivity"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@drawable/papers_bg1"
+    tools:context=".main_game.answers_voting.VotingActivity">
 
     <TextView
         android:id="@+id/textView"
@@ -14,22 +14,26 @@
         android:textSize="20sp"
         android:text="@string/swipe_instruct"
         android:textAlignment="center"
+        android:textColor="@color/black"
         android:layout_margin="10sp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:id="@+id/timerProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:minWidth="200dp" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/votingRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_horizontal">
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
-        android:id="@+id/timerProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minHeight="50dp"
-        android:minWidth="200dp" />
-</LinearLayout>
+
 </LinearLayout>

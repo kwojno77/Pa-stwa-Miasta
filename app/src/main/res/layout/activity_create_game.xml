@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/papers_bg1"
     android:orientation="vertical"
     android:gravity="center"
     tools:context=".create_game.CreateGameActivity">
@@ -18,25 +19,40 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/profile"
-                android:layout_width="350dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|bottom"
-                android:layout_margin="16dp"
-                android:contentDescription="avatar photo"
-                android:src="@drawable/sample_avatar_cropped"
-                app:maxImageSize="56dp"
-                app:tint="@null" />
-
-            <TextView
-                android:id="@+id/createGameHeader"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/stw_rz_gr"
-                android:layout_margin="15sp"
-                android:textAlignment="center"
-                android:textSize="34sp" />
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/createGameHeader"
+                    android:layout_width="0px"
+                    android:layout_weight="2"
+                    android:gravity="center"
+                    android:layout_height="match_parent"
+                    android:layout_margin="10sp"
+                    android:autoSizeMaxTextSize="45sp"
+                    android:autoSizeMinTextSize="18sp"
+                    android:autoSizeStepGranularity="1sp"
+                    android:textColor="@color/black"
+                    android:autoSizeTextType="uniform"
+                    android:text="@string/stw_rz_gr"
+                    android:textAlignment="center"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/profile"
+                    android:layout_width="350dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|bottom"
+                    android:layout_margin="16dp"
+                    android:contentDescription="@string/avatar_photo"
+                    android:src="@drawable/sample_avatar_cropped"
+                    app:maxImageSize="56dp"
+                    app:tint="@null" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -51,8 +67,9 @@
                     android:layout_margin="10sp"
                     android:layout_weight="1"
                     android:text="@string/liczba_rund"
+                    android:textColor="@color/black"
                     android:textAlignment="center"
-                    android:textSize="20sp" />
+                    android:textSize="25sp" />
 
                 <Spinner
                     android:id="@+id/roundNumSpinner"
@@ -60,6 +77,8 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10sp"
                     android:layout_weight="1"
+                    android:textSize="20sp"
+                    android:textColor="@color/black"
                     android:spinnerMode="dialog"
                     android:textAlignment="center" />
 
@@ -77,9 +96,10 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10sp"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
                     android:text="@string/liczba_kategorii"
                     android:textAlignment="center"
-                    android:textSize="20sp" />
+                    android:textSize="25sp" />
 
                 <Spinner
                     android:id="@+id/categoryNumSpinner"
@@ -88,6 +108,8 @@
                     android:layout_margin="10sp"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:textSize="20sp"
+                    android:textColor="@color/black"
                     android:spinnerMode="dialog"
                     android:textAlignment="center" />
             </LinearLayout>
@@ -105,9 +127,10 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10sp"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
                     android:text="@string/kategorie"
                     android:textAlignment="center"
-                    android:textSize="20sp" />
+                    android:textSize="25sp" />
 
                 <Button
                     android:id="@+id/createGameRollButton"
@@ -115,7 +138,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="10dp"
                     android:layout_weight="1"
-                    android:text="Losuj"
+                    android:textSize="20sp"
+                    android:text="@string/losuj"
                     android:textAlignment="center" />
             </LinearLayout>
 
@@ -132,9 +156,10 @@
                 android:layout_height="wrap_content"
                 android:onClick="confirm"
                 android:layout_marginTop="20dp"
+                android:textSize="20sp"
                 android:layout_marginHorizontal="80dp"
                 android:paddingVertical="15dp"
-                android:text="Zatwierdź" />
+                android:text="@string/zatwierd" />
 
         </LinearLayout>
     </ScrollView>

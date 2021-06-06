@@ -16,9 +16,6 @@
         <item>7</item>
         <item>8</item>
     </string-array>
-    <string-array name="gamemode">
-        <item>Klasyczny</item>
-    </string-array>
     <string-array name="categoryNum">
         <item>1</item>
         <item>2</item>
@@ -26,14 +23,26 @@
         <item>4</item>
         <item>5</item>
         <item>6</item>
+        <item>7</item>
+        <item>8</item>
     </string-array>
     <string-array name="categories">
-        <item>Miasta</item>
         <item>Państwa</item>
-        <item>Pierwiastki chemiczne</item>
+        <item>Miasta</item>
         <item>Rośliny</item>
+        <item>Pierwiastki chemiczne</item>
         <item>Stany USA</item>
         <item>Zwierzęta</item>
+        <item>Kolory</item>
+        <item>Stolice</item>
+        <item>Gwiazdozbiory i planety</item>
+        <item>Polskie góry i szczyty</item>
+        <item>Rasy psów</item>
+        <item>Waluty</item>
+        <item>Samochody</item>
+        <item>Postacie mitologii antycznej</item>
+        <item>Wyspy i archipelagi</item>
+        <item>Rzeki</item>
     </string-array>
     <string name="powt_rz_has_o">Powtórz hasło</string>
     <string name="e_mail">E-mail</string>
@@ -51,10 +60,17 @@
     <string name="stw_rz_gr">Stwórz grę</string>
     <string name="zaproszeni">Wysłane zaproszenia:</string>
     <string name="zapro">Zaproś</string>
-    <string name="znajomi">Znajomi</string>
     <string name="nazwa_u_ytkownika">Nazwa użytkownika</string>
     <string name="menu_g_wne">Menu Główne</string>
     <string name="zaproszenia">Zaproszenia:</string>
     <string name="avatar_photo">avatar photo</string>
     <string name="logo">logo</string>
+    <string name="pa_stwa_miasta">Państwa Miasta</string>
+    <string name="losuj">Losuj</string>
+    <string name="dane_u_ytkownika">Dane użytkownika</string>
+    <string name="nick">Nick</string>
+    <string name="statystyki">Statystyki</string>
+    <string name="znajomi">Znajomi</string>
+    <string name="dodaj">Dodaj</string>
+    <string name="wyloguj">Wyloguj</string>
 </resources>

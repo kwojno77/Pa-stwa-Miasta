@@ -1,24 +1,14 @@
 package com.example.pastwa_miasta.main_game
 
-import android.content.Context
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.view.children
-import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.Player
 import com.example.pastwa_miasta.R
-import com.example.pastwa_miasta.ViewProfileActivity
 import com.example.pastwa_miasta.friendsRecyclerViewClick
-import com.example.pastwa_miasta.waiting_room.IRecyclerViewClick
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import java.nio.file.WatchEvent
 
 class FriendsAdapter (
     var players: ArrayList<Player>,

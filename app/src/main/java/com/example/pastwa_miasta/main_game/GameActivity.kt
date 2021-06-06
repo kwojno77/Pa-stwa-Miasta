@@ -21,8 +21,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.random.Random
 
 
@@ -58,24 +56,23 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
-
-        myAnswersList = ArrayList()
-        playersPointsList = ArrayList()
-        otherAnswersList = ArrayList()
-        setViews()
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
-        checkUser()
         onlyResults = intent.getBooleanExtra("onlyResults", false)
         isHost = intent.getBooleanExtra("isHost", false)
         gameId = intent.getStringExtra("gameId").toString()
         gameRef = db.reference.child("Games").child(gameId!!)
         previousLetter = intent.getStringExtra("previousLetter").toString()
+        myAnswersList = ArrayList()
+        playersPointsList = ArrayList()
+        otherAnswersList = ArrayList()
+        setViews()
+        checkUser()
         checkRounds()
         if(onlyResults) {
             playersAnswerRecyclerView.visibility = View.VISIBLE
             letterView.text = previousLetter
             timerView.visibility = View.INVISIBLE
-            stopButton.visibility = View.INVISIBLE
+            stopButton.visibility = View.GONE
             timerProgressBar.visibility = View.VISIBLE
             resultsTimer()
             return
@@ -165,6 +162,7 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
 
                     if(dataSnapshot.hasChild("stop_clicked") && dataSnapshot.child("stop_clicked").value == true) {
                         thread.changeTime(15)
+                        Toast.makeText(baseContext,"Zostało 15s!", Toast.LENGTH_SHORT).show()
                     }
                 }
                 override fun onCancelled(error: DatabaseError) {}
@@ -251,6 +249,7 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
 
     fun endResults() {
         if(ifWasIsLastRound()){
+            updateStats()
             showGameResults()
             return
         }

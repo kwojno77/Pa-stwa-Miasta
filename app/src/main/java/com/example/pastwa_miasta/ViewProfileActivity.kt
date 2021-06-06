@@ -3,7 +3,6 @@ package com.example.pastwa_miasta
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.EditText
@@ -60,7 +59,6 @@ class ViewProfileActivity : AppCompatActivity(), friendsRecyclerViewClick {
     fun logout() {
         mAuth.signOut();
         val i = Intent(this, LoginActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i)
         finish()
     }

@@ -2,7 +2,6 @@ package com.example.pastwa_miasta.create_game
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.*
 import android.widget.LinearLayout
@@ -13,7 +12,8 @@ import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.waiting_room.RoomActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlin.random.Random
@@ -21,7 +21,7 @@ import kotlin.random.Random
 
 class CreateGameActivity : AppCompatActivity() {
 
-    private val CATEGORIES_MAX: Int = 6
+    private val CATEGORIES_MAX: Int = 16
 
     private lateinit var db: FirebaseDatabase
     private lateinit var myRef: DatabaseReference
@@ -42,10 +42,6 @@ class CreateGameActivity : AppCompatActivity() {
         findViewById<Button>(R.id.createGameRollButton).setOnClickListener {
             rollCategories()
         }
-
-        //var gameId = "1" // TYMCZASOWE
-        //db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
-        //gameRef = db.reference.child("Games").child(gameId!!)
 
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
         myRef = db.reference
@@ -86,7 +82,7 @@ class CreateGameActivity : AppCompatActivity() {
                     categorySpinners[i].visibility = View.VISIBLE
                 }
                 for (i in categoriesNumber until CATEGORIES_MAX) {
-                    categorySpinners[i].visibility = View.INVISIBLE
+                    categorySpinners[i].visibility = View.GONE
                 }
             }
         }
@@ -101,6 +97,7 @@ class CreateGameActivity : AppCompatActivity() {
         ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinner.adapter = adapter
+            spinner.textAlignment = View.TEXT_ALIGNMENT_CENTER
         }
     }
 
@@ -184,7 +181,6 @@ class CreateGameActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
             params.setMargins(200, 15, 200, 10)
-
             mySpinner.layoutParams = params
             myLayout.addView(mySpinner)
             createSpinner(mySpinner, R.array.categories)
