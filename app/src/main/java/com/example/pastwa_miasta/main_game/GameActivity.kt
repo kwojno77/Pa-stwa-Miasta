@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +25,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.random.Random
 
 
@@ -31,7 +33,9 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
 
     private lateinit var gameRecyclerView: RecyclerView
     private lateinit var playersPointsRecyclerView: RecyclerView
+    private lateinit var playersAnswerRecyclerView: RecyclerView
     private lateinit var myAnswersList: ArrayList<Answer>
+    private lateinit var otherAnswersList: ArrayList<Answer>
     private lateinit var playersPointsList: ArrayList<Player>
     private lateinit var timerView: TextView
     private lateinit var roundCounterView: TextView
@@ -39,6 +43,7 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
     private lateinit var stopButton: FloatingActionButton
     private lateinit var timerProgressBar: ProgressBar
 
+    private var backPressed: Long = 0
     private var currentRound: Int = 1
     private var maxRounds: Int = 0
     private lateinit var myNick: String
@@ -59,6 +64,7 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
 
         myAnswersList = ArrayList()
         playersPointsList = ArrayList()
+        otherAnswersList = ArrayList()
         setViews()
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
         checkUser()
@@ -69,7 +75,8 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
         previousLetter = intent.getStringExtra("previousLetter").toString()
         checkRounds()
         if(onlyResults) {
-            getPlayersPointsFromDatabase()
+            setRepeatedAnswers()
+            playersAnswerRecyclerView.visibility = View.VISIBLE
             letterView.text = previousLetter
             timerView.visibility = View.INVISIBLE
             stopButton.visibility = View.INVISIBLE
@@ -86,6 +93,14 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
             getGameCategories()
         }
         timer()
+    }
+
+    private fun setRepeatedAnswers() {
+        gameRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
     }
 
     private fun getResultsFromDatabase() {
@@ -171,7 +186,11 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                 }
                 setRoundLabel()
                 if(!onlyResults) generateLetter()
-                else getResultsFromDatabase()
+                else {
+                    getPlayersPointsFromDatabase()
+                    getResultsFromDatabase()
+                    getOtherPlayersAnswersFromDatabase()
+                }
             }
             override fun onCancelled(error: DatabaseError) {}})
     }
@@ -242,12 +261,13 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
         stopButton.setOnClickListener { reportEnding() }
         gameRecyclerViewInit()
         playersPointsRecyclerViewInit()
+        playersAnswerRecyclerViewInit()
     }
 
     private fun gameRecyclerViewInit() {
         gameRecyclerView = findViewById(R.id.recyclerViewGame)
         gameRecyclerView.layoutManager = LinearLayoutManager(this)
-        val customAdapter = InGameAdapter(myAnswersList, this)
+        val customAdapter = InGameAdapter(myAnswersList, this, !onlyResults)
         gameRecyclerView.adapter = customAdapter
         gameRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
     }
@@ -255,9 +275,17 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
     private fun playersPointsRecyclerViewInit() {
         playersPointsRecyclerView = findViewById(R.id.playersPointsRecyclerViewer)
         playersPointsRecyclerView.layoutManager = LinearLayoutManager(this)
-        val customAdapter = ResultsAdapter(playersPointsList, this)
+        val customAdapter = PlayersPointsAdapter(playersPointsList)
         playersPointsRecyclerView.adapter = customAdapter
         playersPointsRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+    }
+
+    private fun playersAnswerRecyclerViewInit() {
+        playersAnswerRecyclerView = findViewById(R.id.playersAnswersRecyclerView)
+        playersAnswerRecyclerView.layoutManager = LinearLayoutManager(this)
+        val customAdapter = InGameAdapter(otherAnswersList, this, !onlyResults)
+        playersAnswerRecyclerView.adapter = customAdapter
+        playersAnswerRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
     }
 
     private fun getPlayersPointsFromDatabase() {
@@ -270,6 +298,31 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                         playersPointsList.add(player)
                     }
                     playersPointsRecyclerView.adapter!!.notifyDataSetChanged()
+                }
+                override fun onCancelled(error: DatabaseError) {}
+            })
+    }
+
+    private fun getOtherPlayersAnswersFromDatabase() {
+        gameRef.child("Players")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    dataSnapshot.children.forEach { player ->
+                        if (player.key.toString() != myNick) {
+                            var answer = Answer(player.key.toString())
+                            otherAnswersList.add(answer)
+                            player.children.forEach { category ->
+                                category.child(currentRound.toString()).children.forEach { ans ->
+                                    var answer = Answer(category.key.toString())
+                                    answer.author = player.key.toString()
+                                    answer.isAccepted = AnswerState.valueOf(ans.value.toString())
+                                    answer.answer = ans.key.toString()
+                                    otherAnswersList.add(answer)
+                                }
+                            }
+                        }
+                    }
+                    playersAnswerRecyclerView.adapter!!.notifyDataSetChanged()
                 }
                 override fun onCancelled(error: DatabaseError) {}
             })
@@ -327,6 +380,7 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                     if(it.key.toString() != "Points") {
                         val map: HashMap<String, String> =
                             (it.value as ArrayList<HashMap<String, String>>).last()
+                        countAnswers(map, dataSnapshot, gameId)
                         for (elem in map) {
                             val isCorrect =
                                 dataSnapshot.child("Keywords").child(it.key!!).child(elem.key.toLowerCase())
@@ -340,6 +394,18 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
             }
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+
+    private fun countAnswers(map: HashMap<String, String>, dataSnapshot: DataSnapshot, gameId: String) {
+        for (elem in map) {
+            if (dataSnapshot.child(gameId).child("Answers").child(elem.key.toLowerCase()).exists()) {
+                gameRef.child("Answers").child(elem.key.toLowerCase()).setValue(
+                    ServerValue.increment(1L)
+                )
+            } else if (elem.key.toLowerCase().length > 1) {
+                gameRef.child("Answers").child(elem.key.toLowerCase()).setValue(1L)
+            }
+        }
     }
 
     private fun setAnswerTrueOrFalse(category: String, answer: String, isCorrect: Boolean) {
@@ -443,4 +509,17 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
     override fun onJoinedAvatarClicked(pos: Int) {}
 
     override fun onInvitedAvatarClicked(adapterPosition: Int) {}
+
+    override fun onBackPressed() {
+        if (backPressed + 1000 > System.currentTimeMillis()) {
+            super.onBackPressed()
+        } else {
+            Toast.makeText(
+                baseContext,
+                "Jeśli wyjdziesz to już nie będziesz mógł dołączyć, czy na pewno tego chcesz?", Toast.LENGTH_SHORT
+            )
+                .show()
+        }
+        backPressed = System.currentTimeMillis()
+    }
 }

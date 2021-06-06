@@ -13,7 +13,7 @@
         android:layout_weight="0.8"
         android:background="#FFFFFF"
         app:srcCompat="@drawable/ic_baseline_quiz_65"
-        android:contentDescription="logo"/>
+        android:contentDescription="@string/logo"/>
 
     <TextView
         android:id="@+id/reportLabel"

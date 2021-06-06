@@ -1,40 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:foregroundTint="#FFFFFF"
-    android:orientation="horizontal">
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="8dp"
+    app:cardMaxElevation="10dp"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true">
 
-    <TextView
-        android:id="@+id/nickLabel"
-        android:layout_width="0px"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="30sp"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:textColor="#000000" />
+        android:foregroundTint="#FFFFFF"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/acceptButton"
-        android:layout_width="0px"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.7"
-        android:layout_margin="10dp"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:text="@string/akceptuj" />
+        <TextView
+            android:id="@+id/nickLabel"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="30sp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textColor="#000000" />
 
-    <Button
-        android:id="@+id/declineButton"
-        android:layout_width="0px"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.6"
-        android:layout_margin="10dp"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:text="@string/odrzu" />
+        <Button
+            android:id="@+id/acceptButton"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
+            android:layout_margin="10dp"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:text="@string/akceptuj" />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/declineButton"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:layout_margin="10dp"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:text="@string/odrzu" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

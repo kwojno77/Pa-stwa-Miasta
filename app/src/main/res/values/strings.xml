@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Państwa Miasta</string>
-    <string name="nickname_hint">Co najmniej 3 znaki</string>
-    <string name="nickname_instruction">Podaj Twoją ksywkę</string>
     <string name="pokoj">Pokój</string>
     <string name="stop">STOP</string>
     <string name="rozpocznij">Rozpocznij</string>
@@ -45,8 +43,8 @@
     <string name="nick_w_grze">Nick w grze</string>
     <string name="nie_pami_tam_has_a">Nie pamiętam hasła</string>
     <string name="swipe_instruct">Jeśli uważasz, że odpowiedź jest poprawna przesuń ją w prawo, w przeciwnym wypadku w lewo</string>
-    <string name="akceptuj">Akceptuj</string>
-    <string name="odrzu">Odrzuć</string>
+    <string name="akceptuj">Tak</string>
+    <string name="odrzu">Nie</string>
     <string name="kategorie">Kategorie</string>
     <string name="liczba_kategorii">Liczba kategorii</string>
     <string name="liczba_rund">Liczba rund</string>
@@ -57,4 +55,6 @@
     <string name="nazwa_u_ytkownika">Nazwa użytkownika</string>
     <string name="menu_g_wne">Menu Główne</string>
     <string name="zaproszenia">Zaproszenia:</string>
+    <string name="avatar_photo">avatar photo</string>
+    <string name="logo">logo</string>
 </resources>

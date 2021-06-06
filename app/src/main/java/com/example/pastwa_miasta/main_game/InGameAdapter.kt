@@ -14,11 +14,11 @@ import com.example.pastwa_miasta.R
 
 class InGameAdapter(
         var answers: ArrayList<Answer>,
-        private var context: Context
+        private var context: Context,
+        var isEditable: Boolean
 ) :
     RecyclerView.Adapter<InGameAdapter.ViewHolder>() {
 
-    var isEditable: Boolean = true
     inner class ViewHolder(view: View, iTextChanged: ITextChange) : RecyclerView.ViewHolder(view) {
         var categoryLabel: TextView? = null
         var iTextChange : ITextChange? = null
@@ -27,6 +27,7 @@ class InGameAdapter(
         init {
             categoryLabel = view.findViewById(R.id.categoryLabel)
             userInput = view.findViewById(R.id.answer)
+            userInput.isEnabled = isEditable
             iTextChange = iTextChanged
             userInput.addTextChangedListener(iTextChange)
         }

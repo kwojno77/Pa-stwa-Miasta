@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -18,11 +19,11 @@ import com.example.pastwa_miasta.R
 import com.example.pastwa_miasta.ViewProfileActivity
 import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.main_game.GameActivity
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+
 
 class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
     private lateinit var joinedRecyclerView: RecyclerView
@@ -31,6 +32,7 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
     private lateinit var invitedPlayersList: ArrayList<Player>
     private lateinit var playerCounterView: TextView
     private lateinit var playerNickEditText: EditText
+    private var backPressed: Long = 0
 
     private var isHost: Boolean = false
     private lateinit var myNick: String
@@ -218,12 +220,29 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
     }
 
     fun startGame() {
+        if(isHost) cancelAllInvites()
         gameRef.child("Game_flag").setValue(true)
         db.reference.child("Games").child(gameId).child("CurrentRound").setValue(1)
         val i = Intent(this, GameActivity::class.java)
         i.putExtra("gameId", gameId)
         startActivity(i)
         finish()
+    }
+
+    private fun cancelAllInvites() {
+        gameRef.child("Invited")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                   dataSnapshot.children.forEach {
+                       db.reference.child("Users").child(it.key.toString())
+                           .child("Requests").child(myNick).removeValue()
+                   }
+                    dataSnapshot.ref.removeValue()
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("Firebase ", "Error: ", error.toException())
+                }
+            })
     }
 
     private fun viewProfile(nick: String) {
@@ -238,5 +257,18 @@ class RoomActivity : AppCompatActivity(), IRecyclerViewClick {
 
     override fun onInvitedAvatarClicked(pos: Int) {
         viewProfile(invitedPlayersList[pos].name)
+    }
+
+    override fun onBackPressed() {
+        if (backPressed + 1000 > System.currentTimeMillis()) {
+            super.onBackPressed()
+        } else {
+            Toast.makeText(
+                baseContext,
+                "Jeśli wyjdziesz to już nie będziesz mógł dołączyć, czy na pewno tego chcesz?", Toast.LENGTH_SHORT
+            )
+                .show()
+        }
+        backPressed = System.currentTimeMillis()
     }
 }

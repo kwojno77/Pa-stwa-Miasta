@@ -30,6 +30,6 @@
         android:id="@+id/recyclerViewResult"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="20sp"></androidx.recyclerview.widget.RecyclerView>
+        android:layout_marginVertical="20sp"/>
 
 </LinearLayout>

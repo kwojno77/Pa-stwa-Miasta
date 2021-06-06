@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -30,6 +31,7 @@ class VotingActivity : AppCompatActivity() {
     private lateinit var myNick: String
     private lateinit var previousLetter: String
     private var currentRound = -1
+    private var backPressed: Long = 0
     private lateinit var timerProgressBar: ProgressBar
 
     private lateinit var db: FirebaseDatabase
@@ -167,6 +169,7 @@ class VotingActivity : AppCompatActivity() {
             .child(category).child(currentRound.toString()).child(answer).setValue("FULL_POINTS")
         gameRef.child("Players").child(myNick).child("Points").setValue(
             ServerValue.increment(10L))
+        addKeywordToDatabase(category, answer)
     }
 
     private fun calculateVotes() {
@@ -185,7 +188,6 @@ class VotingActivity : AppCompatActivity() {
                                     }
                                     if(positiveVote > negativeVote) {
                                         setAnswerTrue(categories.key.toString(), answer.key.toString())
-                                        // ew. dodanie na stale do keywords
                                     }
                                 }
                             }
@@ -194,5 +196,22 @@ class VotingActivity : AppCompatActivity() {
                 }
                 override fun onCancelled(error: DatabaseError) {}
             })
+    }
+
+    private fun addKeywordToDatabase(category: String, answer: String) {
+        db.reference.child("Keywords").child(category).child(answer.toLowerCase()).setValue(true)
+    }
+
+    override fun onBackPressed() {
+        if (backPressed + 1000 > System.currentTimeMillis()) {
+            super.onBackPressed()
+        } else {
+            Toast.makeText(
+                baseContext,
+                "Jeśli wyjdziesz to już nie będziesz mógł dołączyć, czy na pewno tego chcesz?", Toast.LENGTH_SHORT
+            )
+                .show()
+        }
+        backPressed = System.currentTimeMillis()
     }
 }

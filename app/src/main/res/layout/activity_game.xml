@@ -92,17 +92,17 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/playersPointsRecyclerViewer"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_margin="20sp"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/playersAnswersRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="invisible"/>
-
+                android:visibility="invisible"
+                android:layout_margin="20sp"
+                android:minHeight="300sp"/>
         </LinearLayout>
-
-
     </ScrollView>
 
 </LinearLayout>
