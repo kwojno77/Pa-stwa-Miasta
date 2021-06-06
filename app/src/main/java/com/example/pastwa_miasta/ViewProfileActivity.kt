@@ -2,6 +2,7 @@ package com.example.pastwa_miasta
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.TextView
@@ -31,9 +32,12 @@ class ViewProfileActivity : AppCompatActivity() {
         findViewById<Button>(R.id.logoutButton).setOnClickListener {
             logout()
         }
-        if(param == "null") param = FirebaseAuth.getInstance().currentUser!!.displayName.toString()
-        setData(param)
-        findViewById<Button>(R.id.logoutButton).visibility = VISIBLE
+        if(param == "null") {
+            param = FirebaseAuth.getInstance().currentUser!!.displayName.toString()
+            setData(param)
+            findViewById<Button>(R.id.logoutButton).visibility = VISIBLE
+        }
+        else viewOtherPlayer(param)
     }
 
     fun logout() {
@@ -41,6 +45,24 @@ class ViewProfileActivity : AppCompatActivity() {
         val i = Intent(this, LoginActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK); //nie działa tak jak powinno
         startActivity(i)
+    }
+
+    private fun viewOtherPlayer(user: String) {
+        findViewById<Button>(R.id.logoutButton).visibility = INVISIBLE
+        db.reference.child("Users").child(user)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    var nicknameText = findViewById<TextView>(R.id.nicknameText)
+                    nicknameText.text = user
+                    var emailText = findViewById<TextView>(R.id.emailText)
+                    emailText.text = dataSnapshot.child("Email").value as String
+                    var points = findViewById<TextView>(R.id.points)
+                    points.text = (dataSnapshot.child("Stats").child("Points").value as Long).toString()
+                    var wonGames = findViewById<TextView>(R.id.wonGames)
+                    wonGames.text = (dataSnapshot.child("Stats").child("WonGames").value as Long).toString()
+                }
+                override fun onCancelled(error: DatabaseError) {}
+            })
     }
 
     private fun setData(user: String) {
