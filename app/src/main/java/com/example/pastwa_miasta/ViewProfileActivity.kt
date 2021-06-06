@@ -2,12 +2,17 @@ package com.example.pastwa_miasta
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.login.LoginActivity
+import com.example.pastwa_miasta.main_game.FriendsAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -16,26 +21,38 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class ViewProfileActivity : AppCompatActivity() {
+class ViewProfileActivity : AppCompatActivity(), friendsRecyclerViewClick {
     private lateinit var mAuth: FirebaseAuth
     private lateinit var db: FirebaseDatabase
+    lateinit var currentUser: String
+    private lateinit var friendsRecyclerView: RecyclerView
+    private lateinit var friendsList: ArrayList<Player>
+    private lateinit var playerNickEditText: EditText
+    private lateinit var friendsAdapter: FriendsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_profile)
         var param = intent.getStringExtra("user").toString()
-
+        friendsRecyclerView = findViewById(R.id.recyclerViewFriends)
         mAuth = FirebaseAuth.getInstance();
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
-
-
-        findViewById<Button>(R.id.logoutButton).setOnClickListener {
-            logout()
-        }
-        if(param == "null") {
+        currentUser = FirebaseAuth.getInstance().currentUser?.displayName.toString()
+        friendsList = ArrayList()
+        friendsAdapter = FriendsAdapter(friendsList, this)
+        friendsRecyclerView.adapter = friendsAdapter
+        friendsRecyclerView.layoutManager = LinearLayoutManager(this)
+        findViewById<Button>(R.id.logoutButton).visibility = VISIBLE
+        if(param == "null" || param == currentUser) {
+            findViewById<Button>(R.id.logoutButton).setOnClickListener {
+                logout()
+            }
+            findViewById<Button>(R.id.inviteButton).setOnClickListener {
+                var friend = findViewById<EditText>(R.id.playersNicksToInviteEditText).text.toString()
+                checkIfPlayerExists(friend)
+            }
             param = FirebaseAuth.getInstance().currentUser!!.displayName.toString()
             setData(param)
-            findViewById<Button>(R.id.logoutButton).visibility = VISIBLE
         }
         else viewOtherPlayer(param)
     }
@@ -47,8 +64,46 @@ class ViewProfileActivity : AppCompatActivity() {
         startActivity(i)
     }
 
+    private fun deleteFriend(user: String) {
+        db.reference.child("Users").child(currentUser).child("Friends").child(user).removeValue()
+        db.reference.child("Users").child(user).child("Friends").child(currentUser).removeValue()
+        findViewById<Button>(R.id.logoutButton).text = "Dodaj"
+        findViewById<Button>(R.id.logoutButton).setOnClickListener {
+            addFriend(user)
+        }
+        getFriendsList()
+    }
+
+    private fun addFriend(user: String) {
+        db.reference.child("Users").child(currentUser).child("Friends").child(user).setValue(true)
+        db.reference.child("Users").child(user).child("Friends").child(currentUser).setValue(true)
+        findViewById<Button>(R.id.logoutButton).text = "Usuń"
+        findViewById<Button>(R.id.logoutButton).setOnClickListener {
+            deleteFriend(user)
+        }
+        friendsList.add(Player(user))
+        friendsRecyclerView.adapter!!.notifyDataSetChanged()
+    }
+
     private fun viewOtherPlayer(user: String) {
-        findViewById<Button>(R.id.logoutButton).visibility = INVISIBLE
+        db.reference.child("Users").child(currentUser).child("Friends")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (!dataSnapshot.hasChild(user)) {
+                    findViewById<Button>(R.id.logoutButton).text = "Dodaj"
+                    findViewById<Button>(R.id.logoutButton).setOnClickListener {
+                        addFriend(user)
+                    }
+                }
+                else {
+                    findViewById<Button>(R.id.logoutButton).text = "Usuń"
+                    findViewById<Button>(R.id.logoutButton).setOnClickListener {
+                        deleteFriend(user)
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {}
+        })
         db.reference.child("Users").child(user)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -80,6 +135,11 @@ class ViewProfileActivity : AppCompatActivity() {
         var pointsData = 0
         var wonGames = findViewById<TextView>(R.id.wonGames)
         var wonGamesData = 0
+        findViewById<EditText>(R.id.playersNicksToInviteEditText).visibility = VISIBLE
+        playerNickEditText = findViewById(R.id.playersNicksToInviteEditText)
+        findViewById<Button>(R.id.inviteButton).visibility = VISIBLE
+        findViewById<TextView>(R.id.friendsLabel).visibility = VISIBLE
+        findViewById<RecyclerView>(R.id.recyclerViewFriends).visibility = VISIBLE
         if (user != null) {
             println("user not null!!!!!!!!!!!!!!!!!")
             val postListener: ValueEventListener = object : ValueEventListener {
@@ -93,6 +153,63 @@ class ViewProfileActivity : AppCompatActivity() {
                 override fun onCancelled(databaseError: DatabaseError) {}
             }
             db.reference.addValueEventListener(postListener)
+            getFriendsList()
         }
+    }
+
+    override fun onAvatarClicked(pos: Int) {
+        viewProfile(friendsList[pos].name)
+    }
+
+    private fun viewProfile(nick: String) {
+        val i = Intent(this, ViewProfileActivity::class.java)
+        i.putExtra("user", nick)
+        startActivity(i)
+    }
+
+    private fun inviteFriend(friend: String) {
+        db.reference.child("Users").child(currentUser).child("Friends")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (!dataSnapshot.hasChild(friend)) {
+                        db.reference.child("Users").child(currentUser).child("Friends").child(friend).setValue(true)
+                        db.reference.child("Users").child(friend).child("Friends").child(currentUser).setValue(true)
+                        friendsList.add(Player(friend))
+                        friendsRecyclerView.adapter!!.notifyDataSetChanged()
+                        }
+                    else { playerNickEditText.error = "Ten gracz już jest Twoim znajomym!" }
+                    }
+                override fun onCancelled(error: DatabaseError) {}
+            })
+    }
+
+    private fun getFriendsList() {
+        friendsList.clear()
+        db.reference.child("Users").child(currentUser).child("Friends")
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    dataSnapshot.children.forEach {
+                        friendsList.add(Player(it.key.toString()))
+                    }
+                    friendsRecyclerView.adapter!!.notifyDataSetChanged()
+                }
+                override fun onCancelled(error: DatabaseError) {}
+            })
+    }
+
+    private fun checkIfPlayerExists(nick: String) {
+        db.reference.child("Users")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if(dataSnapshot.child(nick).exists()) {
+                        inviteFriend(nick)
+                    } else {
+                        playerNickEditText.error = "Gracz o takim nicku nie istnieje!"
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("Firebase ", "Error: ", error.toException())
+                }
+            })
     }
 }

@@ -9,11 +9,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.view.children
-import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.R
-import java.nio.file.WatchEvent
 
 class InGameAdapter(
         var answers: ArrayList<Answer>,
