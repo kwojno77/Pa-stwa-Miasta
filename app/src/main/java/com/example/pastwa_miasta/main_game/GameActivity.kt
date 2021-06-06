@@ -12,18 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.Player
 import com.example.pastwa_miasta.R
-import com.example.pastwa_miasta.ViewProfileActivity
 import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.main_game.answers_voting.VotingActivity
 import com.example.pastwa_miasta.results.ResultsActivity
-import com.example.pastwa_miasta.results.ResultsAdapter
 import com.example.pastwa_miasta.waiting_room.IRecyclerViewClick
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.random.Random
@@ -75,7 +72,6 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
         previousLetter = intent.getStringExtra("previousLetter").toString()
         checkRounds()
         if(onlyResults) {
-            setRepeatedAnswers()
             playersAnswerRecyclerView.visibility = View.VISIBLE
             letterView.text = previousLetter
             timerView.visibility = View.INVISIBLE
@@ -98,6 +94,34 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
     private fun setRepeatedAnswers() {
         gameRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                dataSnapshot.child("Players").child(myNick).children.forEach { category ->
+                    if (category.key != "Points") {
+                        category.child(currentRound.toString()).children.forEach { answer ->
+                            dataSnapshot.child("Answers").children.forEach { allPushed->
+                                allPushed.children.forEach { allAnswers ->
+                                    if (allAnswers.key.toString() != myNick) {
+                                        if (answer.key.toString()
+                                                .equals(
+                                                    allAnswers.value.toString(),
+                                                    ignoreCase = true
+                                                )
+                                        ) {
+                                            answer.ref.setValue("REPEATED")
+                                            dataSnapshot.child("Players").child(myNick)
+                                                .child("Points").ref.setValue(
+                                                    ServerValue.increment(
+                                                        -5L
+                                                    )
+                                                )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Thread.sleep(1000)
+                getPlayersPointsFromDatabase()
             }
             override fun onCancelled(error: DatabaseError) {}
         })
@@ -119,6 +143,7 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                         }
                     }
                     gameRecyclerView.adapter!!.notifyDataSetChanged()
+                    getOtherPlayersAnswersFromDatabase()
                 }
                 override fun onCancelled(error: DatabaseError) {}
             })
@@ -145,6 +170,7 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                 override fun onCancelled(error: DatabaseError) {}
             })
         gameRef.child("Reported").removeValue()
+        gameRef.child("Answers").removeValue()
         getPlayersPointsFromDatabase()
     }
 
@@ -187,9 +213,7 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                 setRoundLabel()
                 if(!onlyResults) generateLetter()
                 else {
-                    getPlayersPointsFromDatabase()
-                    getResultsFromDatabase()
-                    getOtherPlayersAnswersFromDatabase()
+                    setRepeatedAnswers()
                 }
             }
             override fun onCancelled(error: DatabaseError) {}})
@@ -293,11 +317,12 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     dataSnapshot.children.forEach {
-                        var player = Player(it.key!!)
+                        val player = Player(it.key!!)
                         player.points = (it.child("Points").value as Long).toInt()
                         playersPointsList.add(player)
                     }
                     playersPointsRecyclerView.adapter!!.notifyDataSetChanged()
+                    getResultsFromDatabase()
                 }
                 override fun onCancelled(error: DatabaseError) {}
             })
@@ -309,11 +334,11 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     dataSnapshot.children.forEach { player ->
                         if (player.key.toString() != myNick) {
-                            var answer = Answer(player.key.toString())
+                            val answer = Answer(player.key.toString())
                             otherAnswersList.add(answer)
                             player.children.forEach { category ->
                                 category.child(currentRound.toString()).children.forEach { ans ->
-                                    var answer = Answer(category.key.toString())
+                                    val answer = Answer(category.key.toString())
                                     answer.author = player.key.toString()
                                     answer.isAccepted = AnswerState.valueOf(ans.value.toString())
                                     answer.answer = ans.key.toString()
@@ -380,7 +405,6 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                     if(it.key.toString() != "Points") {
                         val map: HashMap<String, String> =
                             (it.value as ArrayList<HashMap<String, String>>).last()
-                        countAnswers(map, dataSnapshot, gameId)
                         for (elem in map) {
                             val isCorrect =
                                 dataSnapshot.child("Keywords").child(it.key!!).child(elem.key.toLowerCase())
@@ -396,27 +420,22 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
         })
     }
 
-    private fun countAnswers(map: HashMap<String, String>, dataSnapshot: DataSnapshot, gameId: String) {
-        for (elem in map) {
-            if (dataSnapshot.child(gameId).child("Answers").child(elem.key.toLowerCase()).exists()) {
-                gameRef.child("Answers").child(elem.key.toLowerCase()).setValue(
-                    ServerValue.increment(1L)
-                )
-            } else if (elem.key.toLowerCase().length > 1) {
-                gameRef.child("Answers").child(elem.key.toLowerCase()).setValue(1L)
-            }
-        }
+    private fun setAnswersInAnswers(answer: String) {
+        gameRef.child("Answers").push().child(myNick).setValue(answer.toLowerCase())
     }
 
-    private fun setAnswerTrueOrFalse(category: String, answer: String, isCorrect: Boolean) {
-        val value: String
-        if(isCorrect) {
-            value = "FULL_POINTS"
+    private fun setAnswerTrueOrFalse(
+        category: String,
+        answer: String,
+        isCorrect: Boolean,
+    ) {
+        val value: String = if(isCorrect) {
             gameRef.child("Players").child(myNick).child("Points").setValue(
                 ServerValue.increment(10L))
-        }
-        else
-            value = "WRONG"
+            setAnswersInAnswers(answer)
+            "FULL_POINTS"
+        } else
+            "WRONG"
         gameRef.child("Players").child(myNick)
             .child(category).child(currentRound.toString()).child(answer).setValue(value)
     }
