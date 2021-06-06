@@ -91,7 +91,6 @@
                     android:layout_margin="7sp"
                     android:layout_weight="0.8"
                     android:padding="1dp"
-                    android:visibility="gone"
                     android:text="@string/znajomi" />
             </LinearLayout>
 
