@@ -62,6 +62,7 @@
                     android:layout_height="wrap_content"
                     android:autoSizeMaxTextSize="32sp"
                     android:autoSizeMinTextSize="17sp"
+                    android:textColor="@color/black"
                     android:autoSizeStepGranularity="1sp"
                     android:layout_weight="2" />
             </LinearLayout>
@@ -92,6 +93,7 @@
                     android:layout_height="wrap_content"
                     android:autoSizeMaxTextSize="32sp"
                     android:autoSizeMinTextSize="17sp"
+                    android:textColor="@color/black"
                     android:autoSizeStepGranularity="1sp"
                     android:layout_weight="2" />
 
@@ -135,6 +137,7 @@
                     android:layout_width="0px"
                     android:layout_height="wrap_content"
                     android:autoSizeMaxTextSize="32sp"
+                    android:textColor="@color/black"
                     android:autoSizeMinTextSize="17sp"
                     android:autoSizeStepGranularity="1sp"
                     android:layout_weight="2"
@@ -169,6 +172,7 @@
                     android:autoSizeMinTextSize="15sp"
                     android:autoSizeStepGranularity="1sp"
                     android:layout_weight="2"
+                    android:textColor="@color/black"
                     android:text="" />
 
             </LinearLayout>
@@ -203,6 +207,7 @@
             android:layout_weight="0.9"
             android:autofillHints="login"
             android:ems="10"
+            android:textColor="@color/black"
             android:hint="@string/nazwa_u_ytkownika"
             android:inputType="textPersonName"
             android:visibility="invisible"/>
@@ -216,6 +221,7 @@
             android:layout_weight="0.8"
             android:padding="1dp"
             android:text="@string/dodaj"
+            android:textColor="@color/black"
             android:visibility="invisible"/>
     </LinearLayout>
 

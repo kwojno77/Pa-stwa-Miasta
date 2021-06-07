@@ -147,7 +147,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun validateNick(nick: String): Boolean {
-        return nick.length > 1 // To change
+        return nick.length > 5
     }
 
     private fun validateEmail(email: String): Boolean {

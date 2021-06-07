@@ -101,7 +101,7 @@ class LoginFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if(mAuth.currentUser != null ) {//&& mAuth.currentUser!!.isEmailVerified) {
+        if(mAuth.currentUser != null && mAuth.currentUser!!.isEmailVerified) {
             loadMenu()
         }
     }
