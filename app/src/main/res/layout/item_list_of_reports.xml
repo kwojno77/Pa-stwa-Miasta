@@ -20,8 +20,8 @@
             android:layout_width="0px"
             android:layout_height="wrap_content"
             android:layout_weight="0.8"
-            android:background="#FFFFFF"
-            app:srcCompat="@drawable/ic_baseline_quiz_65"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/ic_baseline_question_answer_24"
             android:contentDescription="@string/logo"/>
 
         <TextView

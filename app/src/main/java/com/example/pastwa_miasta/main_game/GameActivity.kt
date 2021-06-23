@@ -21,6 +21,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.random.Random
 
 
@@ -94,23 +97,22 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                 dataSnapshot.child("Players").child(myNick).children.forEach { category ->
                     if (category.key != "Points") {
                         category.child(currentRound.toString()).children.forEach { answer ->
-                            dataSnapshot.child("Answers").children.forEach { allPushed->
-                                allPushed.children.forEach { allAnswers ->
-                                    if (allAnswers.key.toString() != myNick) {
-                                        if (answer.key.toString()
-                                                .equals(
-                                                    allAnswers.value.toString(),
-                                                    ignoreCase = true
+                            dataSnapshot.child("Answers").child(category.key!!).children.forEach { allAnswers->
+                                if(allAnswers.key.toString() != myNick) {
+                                    if(answer.key.toString()
+                                            .equals(
+                                                allAnswers.value.toString(),
+                                                ignoreCase = true
+                                            ) && answer.value != "REPEATED"
+                                    ) {
+                                        answer.ref.setValue("REPEATED")
+                                        dataSnapshot.child("Players").child(myNick)
+                                            .child("Points").ref.setValue(
+                                                ServerValue.increment(
+                                                    -5L
                                                 )
-                                        ) {
-                                            answer.ref.setValue("REPEATED")
-                                            dataSnapshot.child("Players").child(myNick)
-                                                .child("Points").ref.setValue(
-                                                    ServerValue.increment(
-                                                        -5L
-                                                    )
-                                                )
-                                        }
+                                            )
+
                                     }
                                 }
                             }
@@ -313,24 +315,26 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
 
     private fun getPlayersPointsFromDatabase() {
         gameRef.child("Players")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    playersPointsList.clear()
                     dataSnapshot.children.forEach {
                         val player = Player(it.key!!)
                         player.points = (it.child("Points").value as Long).toInt()
                         playersPointsList.add(player)
                     }
                     playersPointsRecyclerView.adapter!!.notifyDataSetChanged()
-                    getResultsFromDatabase()
                 }
                 override fun onCancelled(error: DatabaseError) {}
             })
+        if(onlyResults) getResultsFromDatabase()
     }
 
     private fun getOtherPlayersAnswersFromDatabase() {
         gameRef.child("Players")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    otherAnswersList.clear()
                     dataSnapshot.children.forEach { player ->
                         if (player.key.toString() != myNick) {
                             val answer = Answer(player.key.toString())
@@ -378,11 +382,11 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
 
     private fun sendAnswersToDatabase() {
         for(answer in myAnswersList) {
-            var answer1 = answer.answer
+            var answer1 = answer.answer.trim()
             if(answer1.isEmpty())
                 answer1 = "-"
             gameRef.child("Players").child(myNick)
-                .child(answer.category).child(currentRound.toString()).child(answer1).setValue("check")
+                .child(answer.category).child(currentRound.toString()).child(answer1).setValue("UNKNOWN")
         }
     }
 
@@ -406,21 +410,22 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                             (it.value as ArrayList<HashMap<String, String>>).last()
                         for (elem in map) {
                             val isCorrect =
-                                dataSnapshot.child("Keywords").child(it.key!!).child(elem.key.toLowerCase())
-                                    .exists() && elem.key.toLowerCase()[0].toString() == currentLetter.toLowerCase()
+                                dataSnapshot.child("Keywords").child(it.key!!).child(elem.key.toLowerCase(
+                                    Locale.ROOT
+                                )).exists() && elem.key.toLowerCase(Locale.ROOT)[0].toString() == currentLetter.toLowerCase(
+                                    Locale.ROOT)
                             setAnswerTrueOrFalse(it.key!!, elem.key, isCorrect)
                         }
                     }
                 }
                 autoReport()
-                gameRecyclerView.adapter?.notifyDataSetChanged()
             }
             override fun onCancelled(error: DatabaseError) {}
         })
     }
 
-    private fun setAnswersInAnswers(answer: String) {
-        gameRef.child("Answers").push().child(myNick).setValue(answer.toLowerCase())
+    private fun setAnswersInAnswers(answer: String, category: String) {
+        gameRef.child("Answers").child(category).child(myNick).setValue(answer.toLowerCase(Locale.ROOT).trim())
     }
 
     private fun setAnswerTrueOrFalse(
@@ -431,7 +436,7 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
         val value: String = if(isCorrect) {
             gameRef.child("Players").child(myNick).child("Points").setValue(
                 ServerValue.increment(10L))
-            setAnswersInAnswers(answer)
+            setAnswersInAnswers(answer, category)
             "FULL_POINTS"
         } else
             "WRONG"
@@ -461,7 +466,6 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                     }
                 }
                 showVoting()
-                gameRecyclerView.adapter?.notifyDataSetChanged()
             }
             override fun onCancelled(error: DatabaseError) {}
         })
@@ -498,7 +502,6 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                             maximumPoints = points
                         }
                     }
-                    gameRecyclerView.adapter!!.notifyDataSetChanged()
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
@@ -518,7 +521,6 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                             }
                         }
                     }
-                    gameRecyclerView.adapter!!.notifyDataSetChanged()
                 }
                 override fun onCancelled(error: DatabaseError) {}
             })

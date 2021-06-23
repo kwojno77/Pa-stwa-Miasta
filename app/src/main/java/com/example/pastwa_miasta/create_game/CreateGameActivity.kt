@@ -97,7 +97,6 @@ class CreateGameActivity : AppCompatActivity() {
         ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinner.adapter = adapter
-            spinner.textAlignment = View.TEXT_ALIGNMENT_CENTER
         }
     }
 

@@ -28,7 +28,7 @@ class VotingAdapter(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val report = answers[position]
-        viewHolder.reportLabel?.text = "${report.category} | ${report.playerNick} | ${report.answer}"
+        viewHolder.reportLabel?.text = "${report.answer} | ${report.category}"
     }
 
     override fun getItemCount() = answers.size

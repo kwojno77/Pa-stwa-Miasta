@@ -17,12 +17,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class VotingActivity : AppCompatActivity() {
 
     var ended = false
     private lateinit var recyclerView: RecyclerView
     private lateinit var answersList: ArrayList<Reported>
+    private lateinit var toDisplayList: ArrayList<Reported>
     private lateinit var gameId: String
     private lateinit var myNick: String
     private lateinit var previousLetter: String
@@ -113,18 +117,16 @@ class VotingActivity : AppCompatActivity() {
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val answer = answersList[viewHolder.adapterPosition]
-            if(answer.wasAccepted == null) {
-                if(direction == ItemTouchHelper.RIGHT) {
-                    answer.wasAccepted = true
-                    viewHolder.itemView.setBackgroundColor(
-                        ContextCompat.getColor(applicationContext, R.color.correct_green))
-                } else {
-                    answer.wasAccepted = false
-                    viewHolder.itemView.setBackgroundColor(
-                        ContextCompat.getColor(applicationContext, R.color.wrong_red))
-                }
-                vote(answer)
+            if(direction == ItemTouchHelper.RIGHT) {
+                answer.wasAccepted = true
+                viewHolder.itemView.setBackgroundColor(
+                    ContextCompat.getColor(applicationContext, R.color.correct_green))
+            } else {
+                answer.wasAccepted = false
+                viewHolder.itemView.setBackgroundColor(
+                    ContextCompat.getColor(applicationContext, R.color.wrong_red))
             }
+            vote(answer)
             recyclerView.adapter!!.notifyDataSetChanged()
         }
     }
@@ -137,8 +139,9 @@ class VotingActivity : AppCompatActivity() {
     private fun getReported() {
         Thread.sleep(2000)
         gameRef.child("Reported")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                answersList.clear()
                 dataSnapshot.children.forEach {
                     val map = it.value as HashMap<*, *>
                     for(nick in map) {
@@ -165,8 +168,9 @@ class VotingActivity : AppCompatActivity() {
         gameRef.child("Players").child(myNick)
             .child(category).child(currentRound.toString()).child(answer).setValue("FULL_POINTS")
         gameRef.child("Players").child(myNick).child("Points").setValue(
-            ServerValue.increment(10L))
-        gameRef.child("Answers").push().child(myNick).setValue(answer.toLowerCase())
+            ServerValue.increment(10L)
+        )
+        gameRef.child("Answers").child(category).child(myNick).setValue(answer.toLowerCase(Locale.ROOT).trim())
         addKeywordToDatabase(category, answer)
     }
 
@@ -197,7 +201,8 @@ class VotingActivity : AppCompatActivity() {
     }
 
     private fun addKeywordToDatabase(category: String, answer: String) {
-        db.reference.child("Keywords").child(category).child(answer.toLowerCase()).setValue(true)
+        db.reference.child("Keywords").child(category).child(answer.toLowerCase(Locale.ROOT))
+            .setValue(true)
     }
 
     override fun onBackPressed() {
@@ -207,8 +212,7 @@ class VotingActivity : AppCompatActivity() {
             Toast.makeText(
                 baseContext,
                 "Jeśli wyjdziesz to już nie będziesz mógł dołączyć, czy na pewno tego chcesz?", Toast.LENGTH_SHORT
-            )
-                .show()
+            ).show()
         }
         backPressed = System.currentTimeMillis()
     }

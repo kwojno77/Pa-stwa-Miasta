@@ -75,7 +75,7 @@ class LoginFragment : Fragment() {
             .addOnCompleteListener(context as Activity) { task ->
                 if (task.isSuccessful) {
                     val currentUser = mAuth!!.currentUser
-                    if (currentUser != null ) {//&& currentUser.isEmailVerified) {
+                    if (currentUser != null && currentUser.isEmailVerified) {
                         Toast.makeText(context, "Witaj ${currentUser.displayName}", Toast.LENGTH_SHORT).show()
                         loadMenu()
                     } else {
