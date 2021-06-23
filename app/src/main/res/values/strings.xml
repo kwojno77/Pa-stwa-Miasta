@@ -30,9 +30,9 @@
         <item>Państwa</item>
         <item>Miasta</item>
         <item>Rośliny</item>
-        <item>Pierwiastki chemiczne</item>
-        <item>Stany USA</item>
         <item>Zwierzęta</item>
+        <item>Stany USA</item>
+        <item>Pierwiastki chemiczne</item>
         <item>Kolory</item>
         <item>Stolice</item>
         <item>Gwiazdozbiory i planety</item>
@@ -73,4 +73,6 @@
     <string name="znajomi">Znajomi</string>
     <string name="dodaj">Dodaj</string>
     <string name="wyloguj">Wyloguj</string>
+    <string name="wygrane_gry">Wygrane gry</string>
+    <string name="zdobyte_punkty">Zdobyte punkty</string>
 </resources>

@@ -34,7 +34,7 @@ class ViewProfileActivity : AppCompatActivity(), FriendsRecyclerViewClick {
         setContentView(R.layout.activity_view_profile)
         var param = intent.getStringExtra("user").toString()
         friendsRecyclerView = findViewById(R.id.recyclerViewFriends)
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance()
         db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
         currentUser = FirebaseAuth.getInstance().currentUser?.displayName.toString()
         friendsList = ArrayList()
@@ -47,7 +47,7 @@ class ViewProfileActivity : AppCompatActivity(), FriendsRecyclerViewClick {
                 logout()
             }
             findViewById<Button>(R.id.inviteButton).setOnClickListener {
-                var friend = findViewById<EditText>(R.id.playersNicksToInviteEditText).text.toString()
+                val friend = findViewById<EditText>(R.id.playersNicksToInviteEditText).text.toString()
                 checkIfPlayerExists(friend)
             }
             param = FirebaseAuth.getInstance().currentUser!!.displayName.toString()
@@ -57,7 +57,7 @@ class ViewProfileActivity : AppCompatActivity(), FriendsRecyclerViewClick {
     }
 
     fun logout() {
-        mAuth.signOut();
+        mAuth.signOut()
         val i = Intent(this, LoginActivity::class.java)
         startActivity(i)
         finish()
@@ -68,7 +68,7 @@ class ViewProfileActivity : AppCompatActivity(), FriendsRecyclerViewClick {
         db.reference.child("Users").child(user).child("Friends").child(currentUser).removeValue()
         findViewById<Button>(R.id.logoutButton).text = "Dodaj"
         findViewById<Button>(R.id.logoutButton).setOnClickListener {
-            addFriend(user)
+            addFriend(user.trim())
         }
     }
 
@@ -77,7 +77,7 @@ class ViewProfileActivity : AppCompatActivity(), FriendsRecyclerViewClick {
         db.reference.child("Users").child(user).child("Friends").child(currentUser).setValue(true)
         findViewById<Button>(R.id.logoutButton).text = "Usuń"
         findViewById<Button>(R.id.logoutButton).setOnClickListener {
-            deleteFriend(user)
+            deleteFriend(user.trim())
         }
     }
 
@@ -88,13 +88,13 @@ class ViewProfileActivity : AppCompatActivity(), FriendsRecyclerViewClick {
                 if (!dataSnapshot.hasChild(user)) {
                     findViewById<Button>(R.id.logoutButton).text = "Dodaj"
                     findViewById<Button>(R.id.logoutButton).setOnClickListener {
-                        addFriend(user)
+                        addFriend(user.trim())
                     }
                 }
                 else {
                     findViewById<Button>(R.id.logoutButton).text = "Usuń"
                     findViewById<Button>(R.id.logoutButton).setOnClickListener {
-                        deleteFriend(user)
+                        deleteFriend(user.trim())
                     }
                 }
             }
@@ -103,13 +103,13 @@ class ViewProfileActivity : AppCompatActivity(), FriendsRecyclerViewClick {
         db.reference.child("Users").child(user)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    var nicknameText = findViewById<TextView>(R.id.nicknameText)
+                    val nicknameText = findViewById<TextView>(R.id.nicknameText)
                     nicknameText.text = user
-                    var emailText = findViewById<TextView>(R.id.emailText)
+                    val emailText = findViewById<TextView>(R.id.emailText)
                     emailText.text = dataSnapshot.child("Email").value as String
-                    var points = findViewById<TextView>(R.id.points)
+                    val points = findViewById<TextView>(R.id.points)
                     points.text = (dataSnapshot.child("Stats").child("Points").value as Long).toString()
-                    var wonGames = findViewById<TextView>(R.id.wonGames)
+                    val wonGames = findViewById<TextView>(R.id.wonGames)
                     wonGames.text = (dataSnapshot.child("Stats").child("WonGames").value as Long).toString()
                 }
                 override fun onCancelled(error: DatabaseError) {}
@@ -117,22 +117,22 @@ class ViewProfileActivity : AppCompatActivity(), FriendsRecyclerViewClick {
     }
 
     private fun setData(user: String) {
-        var user = FirebaseAuth.getInstance().currentUser
-        var nicknameText = findViewById<TextView>(R.id.nicknameText)
+        val user = FirebaseAuth.getInstance().currentUser
+        val nicknameText = findViewById<TextView>(R.id.nicknameText)
         if (user != null) {
             nicknameText.text = user.displayName.toString()
         }
-        var emailText = findViewById<TextView>(R.id.emailText)
+        val emailText = findViewById<TextView>(R.id.emailText)
         if (user != null) {
             emailText.text = user.email.toString()
         }
 
-        var points = findViewById<TextView>(R.id.points)
+        val points = findViewById<TextView>(R.id.points)
         var pointsData = 0
-        var wonGames = findViewById<TextView>(R.id.wonGames)
+        val wonGames = findViewById<TextView>(R.id.wonGames)
         var wonGamesData = 0
-        findViewById<EditText>(R.id.playersNicksToInviteEditText).visibility = VISIBLE
         playerNickEditText = findViewById(R.id.playersNicksToInviteEditText)
+        playerNickEditText.visibility = VISIBLE
         findViewById<Button>(R.id.inviteButton).visibility = VISIBLE
         findViewById<TextView>(R.id.friendsLabel).visibility = VISIBLE
         findViewById<RecyclerView>(R.id.recyclerViewFriends).visibility = VISIBLE

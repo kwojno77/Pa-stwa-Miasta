@@ -51,8 +51,8 @@ class CreateGameActivity : AppCompatActivity() {
     }
 
     private fun setDefaultOptions() {
-        roundNumSpinner.setSelection(2)
-        categoryNumSpinner.setSelection(3)
+        roundNumSpinner.setSelection(4)
+        categoryNumSpinner.setSelection(4)
     }
 
     private fun checkUser() {
@@ -160,7 +160,7 @@ class CreateGameActivity : AppCompatActivity() {
             indexList.add(i)
         }
         for (cs in 0 until categorySpinners.size) {
-            if (categorySpinners[cs].visibility == View.INVISIBLE) {
+            if (categorySpinners[cs].visibility == View.GONE) {
                 break
             }
             val random = Random.nextInt(0, indexList.size)
@@ -179,16 +179,25 @@ class CreateGameActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            params.setMargins(200, 15, 200, 10)
+            params.setMargins(60, 15, 60, 10)
             mySpinner.layoutParams = params
             myLayout.addView(mySpinner)
             createSpinner(mySpinner, R.array.categories)
             categorySpinners.add(mySpinner)
 
         }
-        rollCategories()
+        setStartCategories()
         for (i in categorySpinners) {
-            i.visibility = View.INVISIBLE
+            i.visibility = View.GONE
+        }
+    }
+
+    private fun setStartCategories() {
+        for (cs in 0 until categorySpinners.size) {
+            if (categorySpinners[cs].visibility == View.GONE) {
+                break
+            }
+            categorySpinners[cs].setSelection(cs)
         }
     }
 
