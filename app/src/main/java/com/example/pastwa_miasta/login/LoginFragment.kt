@@ -17,6 +17,11 @@ import androidx.fragment.app.Fragment
 import com.example.pastwa_miasta.MainMenuActivity
 import com.example.pastwa_miasta.R
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class LoginFragment : Fragment() {
     private lateinit var mAuth: FirebaseAuth
@@ -24,6 +29,7 @@ class LoginFragment : Fragment() {
     private lateinit var registerEntry: Button
     private lateinit var resetPassButton: Button
     private lateinit var progressBar: ProgressBar
+    private lateinit var appVersion: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,6 +44,8 @@ class LoginFragment : Fragment() {
 
         progressBar = view.findViewById(R.id.loginProgressBar)
         progressBar.visibility = View.INVISIBLE
+
+        checkVersion()
 
         registerEntry = view.findViewById(R.id.registerButton)
         registerEntry.setOnClickListener { startRegistration() }
@@ -88,8 +96,23 @@ class LoginFragment : Fragment() {
                 progressBar.visibility = View.INVISIBLE
             }}
 
+    private fun checkVersion() {
+        var db = Firebase.database("https://panstwamiasta-5c811-default-rtdb.europe-west1.firebasedatabase.app/")
+        db.reference.child("Version")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    appVersion = (dataSnapshot.value as Long).toString()
+                    if(mAuth.currentUser != null && mAuth.currentUser!!.isEmailVerified) {
+                        loadMenu()
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {}
+            })
+    }
+
     private fun loadMenu() {
         val i = Intent(activity, MainMenuActivity::class.java)
+        i.putExtra("version", appVersion)
         startActivity(i)
         activity!!.finish()
     }
@@ -101,9 +124,7 @@ class LoginFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        if(mAuth.currentUser != null && mAuth.currentUser!!.isEmailVerified) {
-            loadMenu()
-        }
+        checkVersion()
     }
 
     private fun showResetDialog() {

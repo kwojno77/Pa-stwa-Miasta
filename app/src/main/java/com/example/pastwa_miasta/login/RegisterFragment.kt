@@ -133,7 +133,7 @@ class RegisterFragment : Fragment() {
             isValid = false
         }
         if(!validateNick(nick)) {
-            nickView.error = "Nick powinien mieć co najmniej 6 znaków!"
+            nickView.error = "Nick powinien mieć co najmniej 5 znaków!"
             isValid = false
         }
         return isValid
@@ -147,7 +147,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun validateNick(nick: String): Boolean {
-        return nick.length > 5
+        return nick.length > 4
     }
 
     private fun validateEmail(email: String): Boolean {
