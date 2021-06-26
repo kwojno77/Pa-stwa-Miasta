@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.example.pastwa_miasta.create_game.CreateGameActivity
 import com.example.pastwa_miasta.invitations.InvitationsActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -16,7 +17,7 @@ class MainMenuActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
-
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         mAuth = FirebaseAuth.getInstance();
 
         findViewById<Button>(R.id.menuJoinButton).setOnClickListener {

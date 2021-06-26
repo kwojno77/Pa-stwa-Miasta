@@ -64,7 +64,6 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
         isHost = intent.getBooleanExtra("isHost", false)
         gameId = intent.getStringExtra("gameId").toString()
         gameRef = db.reference.child("Games").child(gameId!!)
-        previousLetter = intent.getStringExtra("previousLetter").toString()
         myAnswersList = ArrayList()
         playersPointsList = ArrayList()
         otherAnswersList = ArrayList()
@@ -72,6 +71,7 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
         checkUser()
         checkRounds()
         if(onlyResults) {
+            previousLetter = intent.getStringExtra("previousLetter").toString()
             playersAnswerRecyclerView.visibility = View.VISIBLE
             letterView.text = previousLetter
             timerView.visibility = View.INVISIBLE
@@ -207,7 +207,6 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
                 currentRound = (dataSnapshot.child("CurrentRound").value as Long).toInt()
                 if(currentRound > maxRounds) {
                     showGameResults()
-                    updateStats()
                     return
                 }
                 setRoundLabel()
@@ -234,6 +233,9 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
     fun updateTime(time : Int) {
         var minutes = 0
         var seconds = time
+        if(seconds == 15) {
+            reportSlowRoundEnding()
+        }
         while (seconds - 60 >= 0) {
             minutes++
             seconds -= 60
@@ -251,7 +253,6 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
 
     fun endResults() {
         if(ifWasIsLastRound()){
-            updateStats()
             showGameResults()
             return
         }
@@ -484,46 +485,6 @@ class GameActivity : AppCompatActivity(), IRecyclerViewClick {
 
     private fun ifWasIsLastRound(): Boolean {
         return currentRound == maxRounds
-    }
-
-    private fun updateStats() {
-        var maximumPoints = 0
-        val currentPoints: MutableMap<String, Int> = mutableMapOf()
-        gameRef.child("Players")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    dataSnapshot.children.forEach {
-                        val player = it.key
-                        val points = (it.child("Points").value as Long).toInt()
-                        if (player != null) {
-                            currentPoints[player] = points
-                        }
-                        if (points >= maximumPoints) {
-                            maximumPoints = points
-                        }
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {}
-            })
-        db.reference.child("Users")
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    dataSnapshot.children.forEach {
-                        if (currentPoints.containsKey(it.key)) {
-                            var userPoints = (it.child("Stats").child("Points").value as Long).toInt()
-                            userPoints += currentPoints[it.key]!!
-                            it.key?.let { it1 -> db.reference.child("Users").child(it1).child("Stats").child("Points").setValue(userPoints) }
-                            if (currentPoints[it.key]!! == maximumPoints) {
-                                var wonGames = (it.child("Stats").child("WonGames").value as Long).toInt()
-                                wonGames += 1
-                                it.key?.let { it1 -> db.reference.child("Users").child(it1).child("Stats").child("WonGames").setValue(wonGames) }
-                            }
-                        }
-                    }
-                }
-                override fun onCancelled(error: DatabaseError) {}
-            })
     }
 
     override fun onJoinedAvatarClicked(pos: Int) {}

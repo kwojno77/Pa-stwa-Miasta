@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pastwa_miasta.Player
 import com.example.pastwa_miasta.R
 import com.example.pastwa_miasta.ViewProfileActivity
+import com.example.pastwa_miasta.login.LoginActivity
 import com.example.pastwa_miasta.waiting_room.IRecyclerViewClick
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -22,6 +24,7 @@ class ResultsActivity : AppCompatActivity(), IRecyclerViewClick {
     private lateinit var playerCounterView: TextView
 
     private lateinit var gameId: String
+    private lateinit var myNick: String
     private lateinit var db: FirebaseDatabase
     private lateinit var gameRef: DatabaseReference
 
@@ -33,6 +36,7 @@ class ResultsActivity : AppCompatActivity(), IRecyclerViewClick {
         gameId = intent.getStringExtra("gameId").toString()
         gameRef = db.reference.child("Games").child(gameId!!)
 
+        checkUser()
         playersList = ArrayList()
         viewsInit()
         getResultsFromDatabase()
@@ -65,10 +69,37 @@ class ResultsActivity : AppCompatActivity(), IRecyclerViewClick {
                 }
                 playersList.sortByDescending { it.points }
                 recyclerView.adapter!!.notifyDataSetChanged()
+                updateStats()
             }
 
             override fun onCancelled(error: DatabaseError) {}
         })
+    }
+
+    private fun updateStats() {
+        gameRef.child("Players").child(myNick)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    var newPoints = dataSnapshot.child("Points").value as Long
+                    db.reference.child("Users").child(myNick).child("Stats").child("Points").
+                    setValue(ServerValue.increment(newPoints))
+                    if(newPoints == playersList[0].points.toLong()) {
+                        db.reference.child("Users").child(myNick).child("Stats").child("WonGames")
+                            .setValue(ServerValue.increment(1L))
+                    }
+                }
+                override fun onCancelled(error: DatabaseError) {}
+            })
+    }
+
+    private fun checkUser() {
+        val currUser = FirebaseAuth.getInstance().currentUser
+        if (currUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        } else {
+            myNick = currUser.displayName.toString()
+        }
     }
 
     override fun onJoinedAvatarClicked(pos: Int) {
